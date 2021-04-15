@@ -27,6 +27,7 @@ class ProductDetailView(View):
                 {
                     'name'          : product.name,
                     'price'         : product.price,
+                    'detail'        : product.detail,
                     'shipping_fee'  : product.shipping_fee.price,
                     'minimum_free'  : product.shipping_fee.minimum_free,
                     'discount'      : product.discount.rate,
