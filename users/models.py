@@ -11,31 +11,31 @@ class User(models.Model):
     date_of_birth = models.DateField()
     type          = models.BooleanField(default=0)
     gender        = models.BooleanField(default=0)
-    products      = models.ManyToManyField(Product, through='Like')
+    product       = models.ManyToManyField(Product, through='Like')
     class Meta:
         db_table = 'users'
 
 class Like(models.Model):
-    products = models.ForeignKey(Product, on_delete=models.CASCADE)
-    users    = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user    = models.ForeignKey(User, on_delete=models.CASCADE)
     class Meta:
         db_table = 'likes'
 
 class Coupon(models.Model):
-    name  = models.CharField(max_length=100)
-    users = models.ManyToManyField(User, through='UserCoupon')
+    name = models.CharField(max_length=100)
+    user = models.ManyToManyField(User, through='UserCoupon')
     class Meta:
         db_table = 'coupons'
 
 class UserCoupon(models.Model):
-    users   = models.ForeignKey(User, on_delete=models.CASCADE)
-    coupons = models.ForeignKey(Coupon, on_delete=models.CASCADE)
+    user   = models.ForeignKey(User, on_delete=models.CASCADE)
+    coupon = models.ForeignKey(Coupon, on_delete=models.CASCADE)
     class Meta:
         db_table = 'user_coupons'
 
 class Review(models.Model):
-    products    = models.ForeignKey(Product, on_delete=models.CASCADE)
-    users       = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    product     = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user        = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     text        = models.TextField()
     uploaded_at = models.DateTimeField(auto_now_add=True)
     updated_at  = models.DateTimeField(auto_now=True)
@@ -43,7 +43,7 @@ class Review(models.Model):
         db_table = 'reviews'
 
 class Review_Image(models.Model):
-    reviews   = models.ForeignKey(Review, on_delete=models.CASCADE)
+    review    = models.ForeignKey(Review, on_delete=models.CASCADE)
     image_url = models.URLField()
     class Meta:
         db_table = 'review_images'
