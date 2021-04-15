@@ -36,27 +36,27 @@ class Product(models.Model):
     expired_at   = models.DateField()
     is_hit       = models.BooleanField(default=0)
     is_option    = models.BooleanField(default=0)
-    discount     = models.ForeignKey('Discount',on_delete=models.SET_NULL, null=True)
-    shipping_fee = models.ForeignKey('ShippingFee', on_delete=models.SET_NULL, null=True)
-    sub_cateory  = models.ManyToManyField('SubCategory',through='SubCategory_Product')
+    discount     = models.ForeignKey(Discount,on_delete=models.SET_NULL, null=True)
+    shipping_fee = models.ForeignKey(ShippingFee, on_delete=models.SET_NULL, null=True)
+    sub_cateory  = models.ManyToManyField(SubCategory,through='SubCategoryProduct')
     option       = models.ManyToManyField('self',through='Option',symmetrical=False)
     class Meta:
         db_table = 'products'
 
 class Option(models.Model):
-    product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='main_product', null=True)
-    option  = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='main_product_option')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='main_product', null=True)
+    option  = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='main_product_option')
     class Meta:
         db_table = 'options'
 
 class SubCategoryProduct(models.Model):
-    sub_category = models.ForeignKey('SubCategory', on_delete=models.SET_NULL, null=True)
-    product      = models.ForeignKey('Product', on_delete=models.SET_NULL, null=True)
+    sub_category = models.ForeignKey(SubCategory, on_delete=models.SET_NULL, null=True)
+    product      = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     class Meta:
         db_table = 'sub_category_products'
 
 class Image(models.Model):
-    product   = models.ForeignKey('Product',on_delete=models.CASCADE)
+    product   = models.ForeignKey(Product,on_delete=models.CASCADE)
     image_url = models.URLField()
     class Meta:
         db_table = 'images'
