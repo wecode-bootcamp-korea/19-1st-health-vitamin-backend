@@ -34,11 +34,11 @@ class Product(models.Model):
     detail       = models.TextField()
     stock        = models.PositiveIntegerField()
     expired_at   = models.DateField()
-    is_best       = models.BooleanField(default=0)
+    is_best      = models.BooleanField(default=0)
     is_option    = models.BooleanField(default=0)
     discount     = models.ForeignKey(Discount,on_delete=models.SET_NULL, null=True)
     shipping_fee = models.ForeignKey(ShippingFee, on_delete=models.SET_NULL, null=True)
-    sub_cateory  = models.ManyToManyField(SubCategory,through='SubCategoryProduct')
+    sub_category  = models.ManyToManyField(SubCategory,through='SubCategoryProduct')
     option       = models.ManyToManyField('self',through='Option',symmetrical=False)
     class Meta:
         db_table = 'products'
