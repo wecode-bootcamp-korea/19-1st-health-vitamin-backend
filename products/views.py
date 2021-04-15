@@ -20,9 +20,9 @@ class ProductDetailView(View):
         for option in options:
             option_items.append(
                     {
-                        'name'  : option.product.name,
-                        'price' : option.product.price,
-                        'image' : option.product.image_set.first().image_url,
+                        'name'  : option.option.name,
+                        'price' : option.option.price,
+                        'image' : option.option.image_set.first().image_url,
                         }
                     )
 
@@ -30,8 +30,8 @@ class ProductDetailView(View):
                 {
                     'name'          : product.name,
                     'price'         : product.price,
-                    'shipping_fee'  : product.shippingfee.price,
-                    'minimum_free'  : product.shippingfee.minimum_free,
+                    'shipping_fee'  : product.shipping_fee.price,
+                    'minimum_free'  : product.shipping_fee.minimum_free,
                     'discount'      : product.discount.rate,
                     'main_image'    : images.first().image_url,
                     'detail_images' : detail_images,
