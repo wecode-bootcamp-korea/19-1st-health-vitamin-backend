@@ -11,20 +11,17 @@ class ProductDetailView(View):
         product = Product.objects.get(id=product_id)
 
         images        = product.image_set.all()
-        detail_images = []
-        for image in images[1:]:
-            detail_images.append(image.image_url)
+        detail_images = [image.image_url for image in images[1:]]
 
         options      = Option.objects.filter(product=product_id)
-        option_items = []
-        for option in options:
-            option_items.append(
-                    {
-                        'name'  : option.option.name,
-                        'price' : option.option.price,
-                        'image' : option.option.image_set.first().image_url,
-                        }
-                    )
+        option_items = [
+                {
+                    'name'  : option.option.name,
+                    'price' : option.option.price,
+                    'image' : option.option.image_set.first().image_url
+                    }
+                for option in options
+                ]
 
         result = [
                 {
