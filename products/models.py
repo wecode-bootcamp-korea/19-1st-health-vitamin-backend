@@ -49,7 +49,7 @@ class Option(models.Model):
     class Meta:
         db_table = 'options'
 
-class SubCategory_Product(models.Model):
+class SubCategoryProduct(models.Model):
     sub_category = models.ForeignKey('SubCategory', on_delete=models.SET_NULL, null=True)
     product      = models.ForeignKey('Product', on_delete=models.SET_NULL, null=True)
     class Meta:

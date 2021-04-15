@@ -42,7 +42,7 @@ class Review(models.Model):
     class Meta:
         db_table = 'reviews'
 
-class Review_Image(models.Model):
+class ReviewImage(models.Model):
     review    = models.ForeignKey(Review, on_delete=models.CASCADE)
     image_url = models.URLField()
     class Meta:
