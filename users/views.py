@@ -8,12 +8,12 @@ from .models        import User
 
 class SignUpView(View):
     def post(self, request):
-    MINIMUM_PASSWORD_LENGTH = 8
-    MINIMUM_ACCOUNT_LENGTH = 5
+        data = json.loads(request.body)
+
+        MINIMUM_PASSWORD_LENGTH = 8
+        MINIMUM_ACCOUNT_LENGTH  = 5
 
         try:
-            data = json.loads(request.body)
-
             if len(data['account']) < MINIMUM_ACCOUNT_LENGTH:
                 return JsonResponse({'MESSAGE' : 'INVALID_ACCOUNT'}, status = 400)
 
@@ -55,3 +55,28 @@ class SignUpView(View):
 
         except KeyError:
             return JsonResponse({'MESSAGE' : 'KEY ERROR'}, status = 400)
+
+
+class SignInView(View):
+    def post(self, request):
+        data = json.loads(request.body)
+        
+        try:
+            email    = data['email']
+            password = data['password']
+
+            if not User.objects.filter(email=email).exists():
+                return JsonResponse({'MESSAGE' : 'NOT_FOUND'}, status = 404)
+
+            user = User.objects.get(email=email)
+            hashed_password = user.password.encode('utf-8')
+
+            if not bcrypt.checkpw(password.encode('utf-8'), hashed_password):
+                return JsonResponse({'MESSAGE' : 'INVALID_USER'}, status = 401)
+
+            access_token = jwt.encode({'user_id' : user.id}, SECRET_KEY, algorithm = 'HS256')
+
+            return JsonResponse({'MESSAGE' : 'SUCCESS'}, 'ACCESS_TOKEN' : access_token}, status = 200)
+
+        except KeyError:
+            return JsonResponse({'MESSAGE' : 'KEY_ERROR'}, status = 400)
