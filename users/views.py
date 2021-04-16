@@ -1,4 +1,4 @@
-import json
+import json, bcrypt
 
 from django.http    import JsonResponse
 from django.views   import View
@@ -32,13 +32,18 @@ class SignUpView(View):
             if len(data['password']) < MINIMUM_PASSWORD_LENGTH:
                 return JsonResponse({'MESSAGE' : 'INVALID_PASSWORD'}, status = 400)
 
+            hashed_password = bcrypt.hashpw(
+                    data['password'].encode('utf-8'), 
+                    bcrypt.gensalt()
+                    )
+
             if data['date_of_birth'] > datetime.today():
                 return JsonResponse({'MESSAGE' : 'INVALID_DATE_OF_BIRTH'}, status = 400)
 
             User.objects.create(
                 division      = data['division']
                 account       = data['account']
-                password      = data['password']
+                password      = hashed_password.decode('utf-8')
                 name          = data['name']
                 phone_number  = data['phone_number']
                 email         = data['email']
