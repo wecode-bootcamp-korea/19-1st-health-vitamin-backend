@@ -7,16 +7,14 @@ from .models import Product, ShippingFee, ShippingFee, Image, Option
 
 class ProductDetailView(View):
     def get(self, request, product_id):
-
         try: 
-
             if not Product.objects.filter(id=product_id).exists():
-                return JsonResponse({'MESSAGE':'PRODUCT_DOES_NOT_EXIST'}, status=404)
+                return JsonResponse({'MESSAGE' : 'PRODUCT_DOES_NOT_EXIST'}, status=404)
 
             product = Product.objects.get(id=product_id)
 
             if product.is_option:
-                return JsonResponse({'MESSAGE':'NOT_FOUND'}, status=404)
+                return JsonResponse({'MESSAGE' : 'NOT_FOUND'}, status=404)
             
             images        = product.image_set.all()
             detail_images = [image.image_url for image in images[1:]]
@@ -45,7 +43,9 @@ class ProductDetailView(View):
                         }
                     ]
 
-            return JsonResponse({'RESULT' : result}, status=200)
+            return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : result}, status=200)
 
         except KeyError:
-            return JsonResponse({'MESSAGE':'KEY_ERROR'}, status=400)
+            return JsonResponse({'MESSAGE' : 'KEY_ERROR'}, status=400)
+        except IndexError:
+            return JsonResponse({'MESSAGE' : 'INDEX_ERROR'}, status=400)
