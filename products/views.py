@@ -14,7 +14,7 @@ class ProductDetailView(View):
             product = Product.objects.get(id=product_id)
 
             if product.is_option:
-                return JsonResponse({'MESSAGE' : 'NOT_FOUND'}, status=404)
+                return JsonResponse({'MESSAGE' : 'NOT_FOUND'}, status=400)
             
             images        = product.image_set.all()
             detail_images = [image.image_url for image in images[1:]]
@@ -47,5 +47,8 @@ class ProductDetailView(View):
 
         except KeyError:
             return JsonResponse({'MESSAGE' : 'KEY_ERROR'}, status=400)
-        except IndexError:
-            return JsonResponse({'MESSAGE' : 'INDEX_ERROR'}, status=400)
+        except ValueError:
+            return JsonResponse({'MESSAGE' : 'VALUE_ERROR'}, status=400)
+
+
+
