@@ -16,11 +16,14 @@ class SignUpView(View):
         MINIMUM_ACCOUNT_LENGTH  = 5
 
         try:
-            password      = data['password']
             account       = data['account']
+            division      = data['division']
+            password      = data['password']
+            name          = data['name']
             phone_number  = data['phone_number']
             email         = data['email']
             date_of_birth = data['date_of_birth']
+            gender        = data['gender']
 
             email_check = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
             email_check = email_check.match(email)
@@ -45,9 +48,6 @@ class SignUpView(View):
                     bcrypt.gensalt()
                     )
 
-            if date_of_birth > datetime.today():
-                return JsonResponse({'MESSAGE' : 'INVALID_DATE_OF_BIRTH'}, status = 400)
-
             User.objects.create(
                 division      = data['division'],
                 account       = data['account'],
@@ -62,6 +62,7 @@ class SignUpView(View):
             return JsonResponse({'MESSAGE' : 'SUCCESS'}, status = 201)
 
         except KeyError:
+            print('keyErr')
             return JsonResponse({'MESSAGE' : 'KEY ERROR'}, status = 400)
 
 
@@ -84,7 +85,7 @@ class SignInView(View):
             if not bcrypt.checkpw(password.encode('utf-8'), hashed_password):
                 return JsonResponse({'MESSAGE' : 'INVALID_USER'}, status = 401)
 
-            access_token = jwt.encode({'user_id' : user.id}, SECRET_KEY, algorithm = my_settings.ALGORITHM)
+            access_token = jwt.encode({'user_id' : user.id}, my_settings.SECRET_KEY, algorithm = my_settings.ALGORITHM)
 
             return JsonResponse({'MESSAGE' : 'SUCCESS', 'ACCESS_TOKEN' : access_token}, status = 200)
 
