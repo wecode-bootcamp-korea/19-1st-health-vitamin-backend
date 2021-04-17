@@ -4,6 +4,7 @@ from django.http    import JsonResponse
 from django.views   import View
 
 from .models        import User
+import my_settings
 
 
 class SignUpView(View):
@@ -76,7 +77,7 @@ class SignInView(View):
             if not bcrypt.checkpw(password.encode('utf-8'), hashed_password):
                 return JsonResponse({'MESSAGE' : 'INVALID_USER'}, status = 401)
 
-            access_token = jwt.encode({'user_id' : user.id}, SECRET_KEY, algorithm = 'HS256')
+            access_token = jwt.encode({'user_id' : user.id}, SECRET_KEY, algorithm = my_settings.ALGORITHM)
 
             return JsonResponse({'MESSAGE' : 'SUCCESS'}, 'ACCESS_TOKEN' : access_token}, status = 200)
 
