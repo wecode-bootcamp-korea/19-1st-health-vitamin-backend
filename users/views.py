@@ -15,24 +15,28 @@ class SignUpView(View):
         MINIMUM_ACCOUNT_LENGTH  = 5
 
         try:
-            password = data['password']
+            password      = data['password']
+            account       = data['account']
+            phone_number  = data['phone_number']
+            email         = data['email']
+            date_of_birth = data['date_of_birth']
 
-            if len(data['account']) < MINIMUM_ACCOUNT_LENGTH:
+            if len(account) < MINIMUM_ACCOUNT_LENGTH:
                 return JsonResponse({'MESSAGE' : 'INVALID_ACCOUNT'}, status = 400)
 
-            if User.objects.filter(account=data['account']).exists():
+            if User.objects.filter(account=account).exists():
                 return JsonResponse({'MESSAGE' : 'DUPLICATE_ACCOUNT'}, status = 400)
 
-            if User.objects.filter(phone_number=data['phone_number']).exists():
+            if User.objects.filter(phone_number=phone_number).exists():
                 return JsonResponse({'MESSAGE' : 'DUPLICATE_PHONE_NUMBER'}, status = 400)
 
-            if '@' not in data['email'] or '.' not in data['email']:
+            if '@' not in email or '.' not in email:
                 return JsonResponse({'MESSAGE' : INVALID_EMAIL}, status = 400)
 
-            if User.objects.filter(email=data['email']).exists():
+            if User.objects.filter(email=email).exists():
                 return JsonResponse({'MESSAGE' : 'DUPLICATE_EMAIL'}, status = 400)
 
-            if len(data['password']) < MINIMUM_PASSWORD_LENGTH:
+            if len(password) < MINIMUM_PASSWORD_LENGTH:
                 return JsonResponse({'MESSAGE' : 'INVALID_PASSWORD'}, status = 400)
 
             hashed_password = bcrypt.hashpw(
@@ -40,7 +44,7 @@ class SignUpView(View):
                     bcrypt.gensalt()
                     )
 
-            if data['date_of_birth'] > datetime.today():
+            if date_of_birth > datetime.today():
                 return JsonResponse({'MESSAGE' : 'INVALID_DATE_OF_BIRTH'}, status = 400)
 
             User.objects.create(
