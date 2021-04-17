@@ -30,7 +30,7 @@ class Order(models.Model):
     user                 = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     payment_method       = models.ForeignKey(PaymentMethod, on_delete=models.SET_NULL,null=True)
     coupon               = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True)
-    statuse              = models.ForeignKey(Status, on_delete=models.SET_NULL, null=True)
+    status               = models.ForeignKey(Status, on_delete=models.SET_NULL, null=True)
     class Meta:
         db_table = 'orders'
 
