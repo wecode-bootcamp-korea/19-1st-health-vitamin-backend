@@ -14,6 +14,8 @@ class SignUpView(View):
         MINIMUM_ACCOUNT_LENGTH  = 5
 
         try:
+            password = data['password']
+
             if len(data['account']) < MINIMUM_ACCOUNT_LENGTH:
                 return JsonResponse({'MESSAGE' : 'INVALID_ACCOUNT'}, status = 400)
 
@@ -33,7 +35,7 @@ class SignUpView(View):
                 return JsonResponse({'MESSAGE' : 'INVALID_PASSWORD'}, status = 400)
 
             hashed_password = bcrypt.hashpw(
-                    data['password'].encode('utf-8'), 
+                    password.encode('utf-8'), 
                     bcrypt.gensalt()
                     )
 
