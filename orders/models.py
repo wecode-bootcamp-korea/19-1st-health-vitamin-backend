@@ -24,7 +24,7 @@ class PaymentMethod(models.Model):
         db_table = 'payment_methods'
 
 class Order(models.Model):
-    total                = models.PositiveIntegerField()
+    total                = models.PositiveIntegerField(null=True)
     paid_at              = models.DateTimeField(auto_now_add=True, null=True)
     shipping_information = models.ForeignKey(ShippingInformation, on_delete=models.SET_NULL, null=True)
     user                 = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
