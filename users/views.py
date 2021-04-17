@@ -1,4 +1,4 @@
-import json, bcrypt
+import json, bcrypt, jwt, re
 
 from django.http    import JsonResponse
 from django.views   import View
@@ -8,9 +8,10 @@ import my_settings
 
 
 class SignUpView(View):
+    
     def post(self, request):
+        
         data = json.loads(request.body)
-
         MINIMUM_PASSWORD_LENGTH = 8
         MINIMUM_ACCOUNT_LENGTH  = 5
 
@@ -21,6 +22,9 @@ class SignUpView(View):
             email         = data['email']
             date_of_birth = data['date_of_birth']
 
+            email_check = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
+            email_check = email_check.match(email)
+
             if len(account) < MINIMUM_ACCOUNT_LENGTH:
                 return JsonResponse({'MESSAGE' : 'INVALID_ACCOUNT'}, status = 400)
 
@@ -30,11 +34,8 @@ class SignUpView(View):
             if User.objects.filter(phone_number=phone_number).exists():
                 return JsonResponse({'MESSAGE' : 'DUPLICATE_PHONE_NUMBER'}, status = 400)
 
-            if '@' not in email or '.' not in email:
+            if email_check == None:
                 return JsonResponse({'MESSAGE' : INVALID_EMAIL}, status = 400)
-
-            if User.objects.filter(email=email).exists():
-                return JsonResponse({'MESSAGE' : 'DUPLICATE_EMAIL'}, status = 400)
 
             if len(password) < MINIMUM_PASSWORD_LENGTH:
                 return JsonResponse({'MESSAGE' : 'INVALID_PASSWORD'}, status = 400)
@@ -65,7 +66,9 @@ class SignUpView(View):
 
 
 class SignInView(View):
+    
     def post(self, request):
+    
         data = json.loads(request.body)
         
         try:
