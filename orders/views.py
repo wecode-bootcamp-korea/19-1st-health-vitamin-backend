@@ -11,10 +11,10 @@ class CartView(View):
         data = json.loads(request.body)
 
         if not Order.objects.filter(user_id=request.user.id).exists():
-            Order.objects.create(statuse_id=1, user_id=request.user.id)
+            Order.objects.create(status_id=1, user_id=request.user.id)
 
-        if Order.objects.get(user_id=request.user.id).statuse_id !=1:
-            Order.objects.create(statuse_id=1, user_id=request.user.id)
+        if Order.objects.get(user_id=request.user.id).status_id !=1:
+            Order.objects.create(status_id=1, user_id=request.user.id)
 
         if Cart.objects.filter(product_id=data['id']).exists():
             count = Cart.objects.get(product_id=data['id']).count
