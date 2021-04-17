@@ -17,27 +17,35 @@ class ProductDetailView(View):
                 return JsonResponse({'MESSAGE' : 'NOT_FOUND'}, status=400)
             
             images        = product.image_set.all()
-            detail_images = [image.image_url for image in images[1:]]
+            detail_images = [
+                    {
+                        'image_id'  : image.id,
+                        'image_url' : image.image_url 
+                        }
+                    for image in images]
 
             options      = Option.objects.filter(product=product_id)
             option_items = [
                 {
-                    'name'  : option.option.name,
-                    'price' : option.option.price,
-                    'image' : option.option.image_set.first().image_url
+                    'id'        : option.option.id,
+                    'name'      : option.option.name,
+                    'price'     : option.option.price,
+                    'image_id'  : option.option.image_set.first().id,
+                    'image_url' : option.option.image_set.first().image_url
                     }
                 for option in options
                 ]
 
             result = [
                 {
+                    'id'            : product.id,
                     'name'          : product.name,
                     'price'         : product.price,
+                    'stock'         : product.stock,
                     'detail'        : product.detail,
                     'shipping_fee'  : product.shipping_fee.price,
                     'minimum_free'  : product.shipping_fee.minimum_free,
                     'discount'      : product.discount.rate,
-                    'main_image'    : images.first().image_url,
                     'detail_images' : detail_images,
                     'option_items'  : option_items,
                         }
