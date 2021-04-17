@@ -9,7 +9,7 @@ class User(models.Model):
     email         = models.EmailField(max_length=200)
     phone_number  = models.CharField(max_length=30)
     date_of_birth = models.DateField()
-    type          = models.BooleanField(default=0)
+    division      = models.BooleanField(default=0)
     gender        = models.BooleanField(default=0)
     product       = models.ManyToManyField(Product, through='Like')
     class Meta:
