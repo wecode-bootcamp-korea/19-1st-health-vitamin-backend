@@ -35,7 +35,7 @@ class SignUpView(View):
                 return JsonResponse({'MESSAGE' : 'DUPLICATE_PHONE_NUMBER'}, status = 400)
 
             if email_check == None:
-                return JsonResponse({'MESSAGE' : INVALID_EMAIL}, status = 400)
+                return JsonResponse({'MESSAGE' : 'INVALID_EMAIL'}, status = 400)
 
             if len(password) < MINIMUM_PASSWORD_LENGTH:
                 return JsonResponse({'MESSAGE' : 'INVALID_PASSWORD'}, status = 400)
@@ -49,15 +49,15 @@ class SignUpView(View):
                 return JsonResponse({'MESSAGE' : 'INVALID_DATE_OF_BIRTH'}, status = 400)
 
             User.objects.create(
-                division      = data['division']
-                account       = data['account']
-                password      = hashed_password.decode('utf-8')
-                name          = data['name']
-                phone_number  = data['phone_number']
-                email         = data['email']
-                gender        = data['gender']
+                division      = data['division'],
+                account       = data['account'],
+                password      = hashed_password.decode('utf-8'),
+                name          = data['name'],
+                phone_number  = data['phone_number'],
+                email         = data['email'],
+                gender        = data['gender'],
                 date_of_birth = data['date_of_birth']
-            )
+                )
 
             return JsonResponse({'MESSAGE' : 'SUCCESS'}, status = 201)
 
@@ -86,7 +86,7 @@ class SignInView(View):
 
             access_token = jwt.encode({'user_id' : user.id}, SECRET_KEY, algorithm = my_settings.ALGORITHM)
 
-            return JsonResponse({'MESSAGE' : 'SUCCESS'}, 'ACCESS_TOKEN' : access_token}, status = 200)
+            return JsonResponse({'MESSAGE' : 'SUCCESS', 'ACCESS_TOKEN' : access_token}, status = 200)
 
         except KeyError:
             return JsonResponse({'MESSAGE' : 'KEY_ERROR'}, status = 400)
