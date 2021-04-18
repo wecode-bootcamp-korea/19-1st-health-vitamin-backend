@@ -30,6 +30,7 @@ class ProductDetailView(View):
                     'id'        : option.option.id,
                     'name'      : option.option.name,
                     'price'     : option.option.price,
+                    'stock'     : option.option.stock,
                     'image_id'  : option.option.image_set.first().id,
                     'image_url' : option.option.image_set.first().image_url
                     }
