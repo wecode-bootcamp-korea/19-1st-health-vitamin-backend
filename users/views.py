@@ -63,7 +63,7 @@ class SignUpView(View):
 
         except KeyError:
             print('keyErr')
-            return JsonResponse({'MESSAGE' : 'KEY ERROR'}, status = 400)
+            return JsonResponse({'MESSAGE' : 'KEY_ERROR'}, status = 400)
 
 
 class SignInView(View):
