@@ -83,7 +83,7 @@ class ProductlistView(View):
             if sub_category_id == ALL_PRODUCTS:
                 products = Product.objects.all()
 
-            if not products:
+            if not products.exists():
                 return JsonResponse({"MESSAGE":"PRODUCT_DOES_NOT_EXIST"}, status=404)
 
             product_list = [{
@@ -93,7 +93,7 @@ class ProductlistView(View):
                     'is_best'    : product.is_best,
                     'discount'   : Discount.objects.get(id=product.discount_id).rate,
                     'image'      : Image.objects.filter(product_id=product.id).first().image_url,
-                    'product_id' : product.id
+                    'id'         : product.id
                     } for product in products if not product.is_option]
                     
             return JsonResponse({'product': product_list},status = 200)
