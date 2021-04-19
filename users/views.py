@@ -49,14 +49,14 @@ class SignUpView(View):
                     )
 
             User.objects.create(
-                division      = data['division'],
-                account       = data['account'],
+                division      = division,
+                account       = account,
                 password      = hashed_password.decode('utf-8'),
-                name          = data['name'],
-                phone_number  = data['phone_number'],
-                email         = data['email'],
-                gender        = data['gender'],
-                date_of_birth = data['date_of_birth']
+                name          = name,
+                phone_number  = phone_number,
+                email         = email,
+                gender        = gender,
+                date_of_birth = date_of_birth
                 )
 
             return JsonResponse({'MESSAGE' : 'SUCCESS'}, status = 201)
