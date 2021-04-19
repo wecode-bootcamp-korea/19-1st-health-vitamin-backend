@@ -8,9 +8,7 @@ import my_settings
 
 
 class SignUpView(View):
-    
     def post(self, request):
-        
         data = json.loads(request.body)
         MINIMUM_PASSWORD_LENGTH = 8
         MINIMUM_ACCOUNT_LENGTH  = 5
@@ -64,11 +62,8 @@ class SignUpView(View):
         except KeyError:
             return JsonResponse({'MESSAGE' : 'KEY_ERROR'}, status = 400)
 
-
 class SignInView(View):
-    
     def post(self, request):
-    
         data = json.loads(request.body)
         
         try:
