@@ -6,7 +6,6 @@ from django.views   import View
 from .models        import User
 import my_settings
 
-
 class SignUpView(View):
     def post(self, request):
         data = json.loads(request.body)
