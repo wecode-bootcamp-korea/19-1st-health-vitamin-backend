@@ -25,7 +25,7 @@ class CartView(View):
                 order = Order(status_id=STATUS_IN_CART, user_id=user.id)
                 order.save()
 
-            if Order.objects.get(user_id=user.id).status_id != STATUS_IN_CART:
+            if not Order.objects.filter(user_id=user.id, status_id=STATUS_IN_CART).exists():
                 order = Order(status_id=STATUS_IN_CART, user_id=user.id)
                 order.save()
 
