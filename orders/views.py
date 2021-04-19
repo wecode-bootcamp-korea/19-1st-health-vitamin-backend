@@ -1,52 +1,76 @@
 import json
+from json.decoder import JSONDecodeError
 
 from django.views import View
-from django.http import JsonResponse
-from django.db import transaction
+from django.http  import JsonResponse
+from django.db    import transaction
 
-from .models import User, Order, Cart
+from .models         import User, Order, Cart
 from products.models import Product
 
 class CartView(View):
-    STATUS_IN_CARTS = 1
-
     @transaction.atomic
     def post(self, request):
-        data = json.loads(request.body)
-        user = request.user
+        STATUS_IN_CART = 1
 
-        if not Order.objects.filter(user_id=user.id).exists():
-            order = Order(status_id=STATUS_IN_CARTS, user_id=user.id)
-            order.save()
+        data       = json.loads(request.body)
+        product_id = data['id']
+        count      = data['count']
 
-        if Order.objects.get(user_id=user.id).status_id != STATUS_IN_CARTS:
-            order = Order(status_id=STATUS_IN_CARTS, user_id=user.id)
-            order.save()
+        save_point = transaction.savepoint()
 
-        if Cart.objects.filter(product_id=data['id']).exists():
-            count = Cart.objects.get(product_id=data['id']).count
-            count += data['count']
-            count.save()
+        try:
+            if not Order.objects.filter(user_id=data['user_id']).exists():
+                order = Order(status_id=STATUS_IN_CART, user_id=data['user_id'])
+                order.save()
 
-        cart = Cart(
-                product_id=data['id'],
-                count=data['count'],
-                order_id=Order.objects.get(user_id=user.id).id
-                )
-        cart.save()
+            if Order.objects.get(user_id=data['user_id']).status_id != STATUS_IN_CART:
+                order = Order(status_id=STATUS_IN_CART, user_id=data['user_id'])
+                order.save()
 
-        options = data['options']
-        for option in options:
-            if Cart.objects.filter(product_id=option['option_id']).exists():
-                option_count = Cart.objects.get(product_id=option['option_id']).count
-                option_count += option['count']
-                option_count.save()
+            order   = Order.objects.filter(user_id=data['user_id'], status_id=STATUS_IN_CART)
+            product = order.first().cart_set.filter(product_id=product_id)
 
-            cart = Cart(
-                    product_id=option['option_id'],
-                    count=option['count'],
-                    order_id=Order.objects.get(user_id=user.id).id
+            if product.exists():
+                product        = product.first()
+                product.count += count
+                product.save()
+
+            else:
+                cart = Cart(
+                    product_id = product_id,
+                    count      = count,
+                    order_id   = order.first().id
                     )
-            cart.save()
+                cart.save()
 
-            return ({'MESSAGE' : 'SUCCESS'}, status=201)
+            options = data['options']
+            for option in options:
+                product_option = order.first().cart_set.filter(product_id=option['option_id'])
+
+                if product_option.exists():
+                    product_option        = product_option.first()
+                    product_option.count += option['count']
+                    product_option.save()
+
+                else:
+                    cart = Cart(
+                        product_id = option['option_id'],
+                        count      = option['count'],
+                        order_id   = order.first().id
+                        )
+                    cart.save()
+
+            transaction.savepoint_commit(save_point)
+
+            return JsonResponse({'MESSAGE' : 'SUCCESS'}, status=201)
+
+        except JSONDecodeError:
+            transaction.savepoint_rollback(save_point)
+            return JsonResponse({'MESSAGE' : 'JSON_DECODE_ERROR'}, status=400)
+        except KeyError:
+            transaction.savepoint_rollback(save_point)
+            return JsonResponse({'MESSAGE' : 'KEY_ERROR'}, status=400)
+        except ValueError:
+            transaction.savepoint_rollback(save_point)
+            return JsonResponse({'MESSAGE' : 'VALUE_ERROR'}, status=400)
