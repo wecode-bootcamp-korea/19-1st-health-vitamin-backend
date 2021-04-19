@@ -8,17 +8,19 @@ from users.models          import User
 import my_settings
 
 def user_check(func):
-
     def wrapper(self,request,*args, **kwargs):
     
         try:
             access_token = request.headers.get('Authorization', None)          
-            payload = jwt.decode(access_token, my_settings.SECRET_KEY, algorithms=my_settings.ALGORITHM)        # 디코드 할 때는 algorithms 사용, 인코딩 할 때는 algorithm 사용
+            payload = jwt.decode(access_token, my_settings.SECRET_KEY, algorithms=my_settings.ALGORITHM)
             user = User.objects.get(id=payload['user_id'])                 
             request.user = user                                     
+
         except jwt.exceptions.DecodeError:                                     
             return JsonResponse({'MESSAGE' : 'INVALID_TOKEN' }, status=400)
+
         except User.DoesNotExist:                                           
             return JsonResponse({'MESSAGE' : 'INVALID_USER'}, status=400)
+
         return func(self, request, *args, **kwargs)
     return wrapper
