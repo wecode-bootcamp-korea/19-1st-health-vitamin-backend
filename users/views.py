@@ -62,7 +62,6 @@ class SignUpView(View):
             return JsonResponse({'MESSAGE' : 'SUCCESS'}, status = 201)
 
         except KeyError:
-            print('keyErr')
             return JsonResponse({'MESSAGE' : 'KEY_ERROR'}, status = 400)
 
 
