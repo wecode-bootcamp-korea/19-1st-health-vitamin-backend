@@ -7,7 +7,7 @@ from django.http  import JsonResponse
 from .models import Review,User,ReviewImage
 
 class ReviewView(View):
-    def get(self,request):
+    def get(self,request,product_id):
         try:
             reviews = Review.objects.all()
             if not reviews.exists():
@@ -37,3 +37,28 @@ class ReviewView(View):
             return JsonResponse({'REVIEW' : review_list},status=200)
         except KeyError:
             return JsonResponse({'MESSAGE': 'KEY_ERROR'},status = 400)
+
+    @user_check
+    def post(self,request):
+            try: 
+            data       = json.loads(request.body)
+            content    = data.get('content')
+            product_id = data.get('product_id')
+            product    = Product.objects.get(pk=product_info)
+
+            Review.objects.create(user=request.user, product=product_id,content=content)
+
+            return JsonResponse({'result': 'Review Created'}, status=201)
+        except TypeError:
+            return JsonResponse({"message":"Type_Error"}, status=400)
+        except Product.DoesNotExist:
+            return JsonResponse({"message":"Product_DoesNotExist"}, status=404)
+    
+
+    @user_check
+    def delete(self,request,product_id):
+        user = request.user
+        
+
+            
+

@@ -2,5 +2,5 @@ from django.urls import path
 from .views import ReviewView
 
 urlpatterns = [
-    path('/reviews', ReviewView.as_view())
+    path('/reviews/<int:product_id>', ReviewView.as_view())
 ]
