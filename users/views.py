@@ -37,7 +37,7 @@ class SignUpView(View):
             if User.objects.filter(phone_number=phone_number).exists():
                 return JsonResponse({'MESSAGE' : 'DUPLICATE_PHONE_NUMBER'}, status = 400)
 
-            if email_check == None:
+            if not email_check:
                 return JsonResponse({'MESSAGE' : 'INVALID_EMAIL'}, status = 400)
 
             if len(password) < MINIMUM_PASSWORD_LENGTH:
