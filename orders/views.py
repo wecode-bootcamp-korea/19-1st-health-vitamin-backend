@@ -13,6 +13,7 @@ class CartView(View):
     def post(self, request):
         STATUS_IN_CART = 1
 
+        user       = request.user
         data       = json.loads(request.body)
         product_id = data['id']
         count      = data['count']
@@ -20,15 +21,15 @@ class CartView(View):
         save_point = transaction.savepoint()
 
         try:
-            if not Order.objects.filter(user_id=data['user_id']).exists():
-                order = Order(status_id=STATUS_IN_CART, user_id=data['user_id'])
+            if not Order.objects.filter(user_id=user.id).exists():
+                order = Order(status_id=STATUS_IN_CART, user_id=user.id)
                 order.save()
 
-            if Order.objects.get(user_id=data['user_id']).status_id != STATUS_IN_CART:
-                order = Order(status_id=STATUS_IN_CART, user_id=data['user_id'])
+            if Order.objects.get(user_id=user.id).status_id != STATUS_IN_CART:
+                order = Order(status_id=STATUS_IN_CART, user_id=user.id)
                 order.save()
 
-            order   = Order.objects.filter(user_id=data['user_id'], status_id=STATUS_IN_CART)
+            order   = Order.objects.filter(user_id=user.id, status_id=STATUS_IN_CART)
             product = order.first().cart_set.filter(product_id=product_id)
 
             if product.exists():
