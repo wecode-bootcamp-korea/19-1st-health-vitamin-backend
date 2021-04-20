@@ -129,14 +129,14 @@ class ProductReviewView(View):
 
 class BestProductView(View):
     def get(self,request):
-        products = Product.objects.all().order_by('is_best','stock')[:8]
+        products = Product.objects.all().order_by('stock')[:8]
         best_product_list=[{
                     'name'       : product.name,
                     'price'      : product.price,
                     'discount'   : Discount.objects.get(id=product.discount_id).rate,
                     'image'      : Image.objects.filter(product_id=product.id).first().image_url,
                     'product_id' : product.id
-                    } for product in products]
+                    } for product in products if product.is_best]
 
         return JsonResponse({'BEST_PRODUCT' : best_product_list}, status = 200)
 
