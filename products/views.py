@@ -31,6 +31,7 @@ class ProductDetailView(View):
 
             result = [
                 {
+                    'id'            : product.id,
                     'name'          : product.name,
                     'price'         : product.price,
                     'detail'        : product.detail,
