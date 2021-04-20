@@ -90,25 +90,12 @@ class SignInView(View):
 class UserReviewView(View):
     def get(self,request,product_id):
         try:
-            ALL_REVIEWS = 0
             reviews = Review.objects.filter(product=product_id)
-
-            if product_id == ALL_REVIEWS:
-                reviews = Review.objects.all()
 
             if not reviews.exists():
                 return JsonResponse({'MESSAGE': 'REVIEW_DOES_NOT_EXIST'},status = 404)
 
-            review_list = []
-            for review in reviews:
-                user_review_image_list=[]
-                for image in review.reviewimage_set.all():
-                    user_review_image_list.append({
-                        'review_image_id' : image.id,
-                        'review_image'    : image.image_url
-                    })
- 
-                review_list.append({
+            review_list=[{
                     'review_id'         : review.id,
                     'product_name'      : review.product.name,
                     'product_image'     : review.product.image_set.all().first().image_url,
@@ -117,23 +104,24 @@ class UserReviewView(View):
                     'user_review'       : review.text,
                     'uploaded_at'       : review.uploaded_at,
                     'updated_at'        : review.updated_at,
-                    'user_review_image' : user_review_image_list,
+                    'user_review_image' : [{'review_image_id' : image.id,
+                                            'review_image'    : image.image_url
+                                            }for image in review.reviewimage_set.all()],
                     'gender'            : review.user.gender
-                })
+                }for review in reviews]
             return JsonResponse({'REVIEW' : review_list},status=200)
 
         except KeyError:
             return JsonResponse({'MESSAGE': 'KEY_ERROR'},status = 400)
 
-    #@user_check
+    @user_check
     def post(self,request,product_id):
         try: 
-            data       = json.loads(request.body)
-            text       = data['text']
-            product    = Product.objects.get(id=product_id) 
-            #user       = request.user
-            user = User.objects.get(id=28)
-            images       = data.get('image',None)
+            data    = json.loads(request.body)
+            text    = data['text']
+            product = Product.objects.get(id=product_id) 
+            user    = request.user
+            image   = data.get('image',None)
 
             if Review.objects.filter(product=product,user=user).exists():
                 return JsonResponse({'MESSAGE': 'REVIEW_CAN_WRITE_ONCE'}, status = 400)
@@ -142,15 +130,12 @@ class UserReviewView(View):
                 user    = user,
                 product = product,
                 text    = text
+                )      
+            review = Review.objects.get(user=user, product=product)
+            ReviewImage.objects.create(
+                    image_url = image,
+                    review    = review
                 )
-            
-            # review = Review.objects.get(user=user, product=product)
-
-            # for image in images:
-            #     ReviewImage.objects.create(
-            #         image_url = image,
-            #         review    = review.id
-            #     )
 
             return JsonResponse({'MESSAGE': 'REVIEW_CREATED'}, status=201)
 
@@ -163,16 +148,14 @@ class UserReviewView(View):
         except KeyError:
             return JsonResponse({'MESSAGE': 'KEY_ERROR'},status = 400)
 
-    #@user_check
+    @user_check
     def delete(self,request,product_id):
         try:
             user    = request.user
             product = Product.objects.get(id=product_id)
-            #user    = User.objects.get(id=28)
-            user = User.objects.get(id=29)
 
             if not Review.objects.filter(product=product,user=user).exists():
-                return JsonResponse({"MESSAGE": "YOUR_REVIEW_DOES_NOT_EXIST"},status=400)
+                return JsonResponse({"MESSAGE": "REVIEW_DOES_NOT_EXIST"},status=400)
         
             Review.objects.filter(product=product,user=user).delete()
 
