@@ -83,30 +83,30 @@ from orders.models import *
 #           shipping_fee=shipping_fee
 #           )
 
-# CSV_PATH_PRODUCTS = './sub_category_products.csv'
-# with open(CSV_PATH_PRODUCTS) as in_file:
-#   data_reader = csv.reader(in_file)
-#   next(data_reader, None)
-#   for row in data_reader:
-#         product=Product.objects.get(id=row[0])
-#         sub_category=SubCategory.objects.get(id=row[1])
-#         SubCategoryProduct.objects.create(
-#           product=product,
-#           sub_category=sub_category
-#         )
-
-
-CSV_PATH_PRODUCTS = './images.csv'
+CSV_PATH_PRODUCTS = './sub_category_products.csv'
 with open(CSV_PATH_PRODUCTS) as in_file:
   data_reader = csv.reader(in_file)
   next(data_reader, None)
   for row in data_reader:
-        image_url=row[0]
-        product=Product.objects.get(id=row[1])
-        Image.objects.create(
-          image_url=image_url,
-          product=product
+        product=Product.objects.get(id=row[0])
+        sub_category=SubCategory.objects.get(id=row[1])
+        SubCategoryProduct.objects.create(
+          product=product,
+          sub_category=sub_category
         )
+
+
+# CSV_PATH_PRODUCTS = './images.csv'
+# with open(CSV_PATH_PRODUCTS) as in_file:
+#   data_reader = csv.reader(in_file)
+#   next(data_reader, None)
+#   for row in data_reader:
+#         image_url=row[0]
+#         product=Product.objects.get(id=row[1])
+#         Image.objects.create(
+#           image_url=image_url,
+#           product=product
+#         )
 
 # CSV_PATH_PRODUCTS = './users.csv'
 # with open(CSV_PATH_PRODUCTS) as in_file:
