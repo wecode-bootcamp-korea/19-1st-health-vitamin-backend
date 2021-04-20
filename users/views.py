@@ -129,7 +129,7 @@ class ReviewView(View):
             product    = Product.objects.get(id=product_id) 
             #user       = request.user
             user = User.objects.get(id=28)
-            image       = data.get('image',None)
+            images       = data.get('image',None)
 
             if Review.objects.filter(product=product,user=user).exists():
                 return JsonResponse({'MESSAGE': 'REVIEW_CAN_WRITE_ONCE'}, status = 400)
@@ -142,10 +142,14 @@ class ReviewView(View):
             
             review = Review.objects.get(user=user, product=product)
 
-            ReviewImage.objects.create(
+            for image in images:
+                ReviewImage.objects.create(
                     image_url = image,
-                    review    = Review.objects.get(id=review.id)
+                    review    = review.id
                 )
+
+
+            
 
             return JsonResponse({'MESSAGE': 'REVIEW_CREATED'}, status=201)
 
