@@ -57,31 +57,31 @@ from orders.models import *
 #         )
 
 
-# CSV_PATH_PRODUCTS = './products.csv'
-# with open(CSV_PATH_PRODUCTS) as in_file:
-#   data_reader = csv.reader(in_file)
-#   next(data_reader, None)
-#   for row in data_reader:
-#         name= row[0]
-#         price= row[1]
-#         detail= row[2]
-#         stock= row[3]
-#         expired_at= row[4]
-#         is_best= row[5]
-#         is_option= row[6]
-#         discount = Discount.objects.get(id=row[7])
-#         shipping_fee = ShippingFee.objects.get(id=row[8])
-#         Product.objects.create(
-#           name = name, 
-#           price = price, 
-#           detail = detail,
-#           stock = stock,
-#           expired_at = expired_at, 
-#           is_best = is_best, 
-#           is_option = is_option, 
-#           discount=discount,
-#           shipping_fee=shipping_fee
-#           )
+CSV_PATH_PRODUCTS = './products.csv'
+with open(CSV_PATH_PRODUCTS) as in_file:
+  data_reader = csv.reader(in_file)
+  next(data_reader, None)
+  for row in data_reader:
+      name= row[0]
+      price= row[1]
+      detail= row[2]
+      stock= row[3]
+      expired_at= row[4]
+      is_best= row[5]
+      is_option= row[6]
+      discount = Discount.objects.get(id=row[7])
+      shipping_fee = ShippingFee.objects.get(id=row[8])
+      Product.objects.create(
+          name = name, 
+          price = price, 
+          detail = detail,
+          stock = stock,
+          expired_at = expired_at, 
+          is_best = is_best, 
+          is_option = is_option, 
+          discount=discount,
+          shipping_fee=shipping_fee
+          )
 
 # CSV_PATH_PRODUCTS = './sub_category_products.csv'
 # with open(CSV_PATH_PRODUCTS) as in_file:
@@ -132,19 +132,19 @@ from orders.models import *
 #           gender=gender
 #         )
 
-CSV_PATH_PRODUCTS = './reviews.csv'
-with open(CSV_PATH_PRODUCTS) as in_file:
-  data_reader = csv.reader(in_file)
-  next(data_reader, None)
-  for row in data_reader:
-        text=row[0]
-        product=Product.objects.get(id=row[1])
-        user=User.objects.get(id=row[2])
-        Review.objects.create(
-          text=text,
-          product=product,
-          user=user
-        )
+# CSV_PATH_PRODUCTS = './reviews.csv'
+# with open(CSV_PATH_PRODUCTS) as in_file:
+#   data_reader = csv.reader(in_file)
+#   next(data_reader, None)
+#   for row in data_reader:
+#         text=row[0]
+#         product=Product.objects.get(id=row[1])
+#         user=User.objects.get(id=row[2])
+#         Review.objects.create(
+#           text=text,
+#           product=product,
+#           user=user
+#         )
 
 
 
