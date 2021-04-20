@@ -4,7 +4,7 @@ import datetime
 from django.views import View
 from django.http  import JsonResponse
 
-from .models import Product, ShippingFee, ShippingFee, Image, Option
+from .models import Product, ShippingFee, ShippingFee, Image, Option, Discount, SubCategoryProduct
 from users.models import Review,ReviewImage
 
 class ProductDetailView(View):
@@ -109,7 +109,7 @@ class ProductlistView(View):
         except KeyError:
             return JsonResponse({'MESSAGE':'KEY_ERROR'}, status = 400)
 
-class MainReviewView(View):
+class ProductReviewView(View):
     def get(self,request):
         reviews = Review.objects.all().order_by('uploaded_at')[:10]
         real_review_list=[{
@@ -127,7 +127,7 @@ class MainReviewView(View):
 
         return JsonResponse({'REAL_REVIEW' : real_review_list}, status = 200)
 
-class MainBestProductView(View):
+class BestProductView(View):
     def get(self,request):
         products = Product.objects.all().order_by('is_best','stock')[:8]
         best_product_list=[{
