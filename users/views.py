@@ -49,6 +49,7 @@ class ReviewView(View):
             product    = Product.objects.get(id=product_id) 
             #user       = request.user
             user = User.objects.get(id=28)
+            images       = data.get('image',None)
 
             if Review.objects.filter(product=product,user=user).exists():
                 return JsonResponse({'MESSAGE': 'REVIEW_CAN_WRITE_ONCE'}, status = 400)
@@ -56,7 +57,16 @@ class ReviewView(View):
             Review.objects.create(
                 user    = user,
                 product = product,
-                text    = text)
+                text    = text
+                )
+            
+            review = Review.objects.get(user=user, product=product)
+
+            for image in images:
+                ReviewImage.objects.create(
+                    image_url = image,
+                    review    = Review.objects.get(id=review)
+                )
 
             return JsonResponse({'MESSAGE': 'REVIEW_CREATED'}, status=201)
 
@@ -74,7 +84,7 @@ class ReviewView(View):
             product = Product.objects.get(id=product_id)
             user    = User.objects.get(id=28)
 
-            if not Review.objects.filter(product=product,user=user):
+            if not Review.objects.filter(product=product,user=user).exists():
                 return JsonResponse({"MESSAGE": "YOUR_REVIEW_DOES_NOT_EXIST"},status=400)
         
             Review.objects.filter(product=product,user=user).delete()
