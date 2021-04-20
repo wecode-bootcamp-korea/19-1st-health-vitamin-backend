@@ -44,6 +44,6 @@ class Review(models.Model):
 
 class ReviewImage(models.Model):
     review    = models.ForeignKey(Review, on_delete=models.CASCADE)
-    image_url = models.URLField()
+    image_url = models.URLField(null=True)
     class Meta:
         db_table = 'review_images'
