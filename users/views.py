@@ -4,7 +4,8 @@ from django.http      import JsonResponse
 from django.views     import View
 from django.db.models import Q
 
-from .models        import Review,User,ReviewImage,Product
+from .models          import Review,User,ReviewImage,Product
+from utils.decorator  import user_check
 import my_settings
 
 class SignUpView(View):
@@ -120,14 +121,13 @@ class ReviewView(View):
         except KeyError:
             return JsonResponse({'MESSAGE': 'KEY_ERROR'},status = 400)
 
-    # @user_check
+    @user_check
     def post(self,request,product_id):
         try: 
             data       = json.loads(request.body)
             text       = data['text']
             product    = Product.objects.get(id=product_id) 
-            #user       = request.user
-            user = User.objects.get(id=28)
+            user       = request.user
             images       = data.get('image',None)
 
             if Review.objects.filter(product=product,user=user).exists():
@@ -158,10 +158,10 @@ class ReviewView(View):
         except ValueError:
             return JsonResponse({"MESSAGE":"CHECK_YOUR_VALUE"}, status= 400)
 
-     # @user_check
+    @user_check
     def delete(self,request,product_id):
         try:
-             # user    = request.user
+            user    = request.user
             product = Product.objects.get(id=product_id)
             user    = User.objects.get(id=28)
 
