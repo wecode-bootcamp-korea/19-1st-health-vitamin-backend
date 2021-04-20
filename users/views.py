@@ -104,9 +104,7 @@ class UserReviewView(View):
                     'user_review'       : review.text,
                     'uploaded_at'       : review.uploaded_at,
                     'updated_at'        : review.updated_at,
-                    'user_review_image' : [{'review_image_id' : image.id,
-                                            'review_image'    : image.image_url
-                                            }for image in review.reviewimage_set.all()],
+                    'user_review_image' : review.reviewimage_set.get(review=review).image_url if review.reviewimage_set.filter(review=review) else None,
                     'gender'            : review.user.gender
                 }for review in reviews]
             return JsonResponse({'REVIEW' : review_list},status=200)
