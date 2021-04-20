@@ -141,17 +141,16 @@ class ReviewView(View):
                 )
             
             review = Review.objects.get(user=user, product=product)
-            print(review)
 
             ReviewImage.objects.create(
                     image_url = image,
-                    review    = Review.objects.get(id=review)
+                    review    = Review.objects.get(id=review.id)
                 )
 
             return JsonResponse({'MESSAGE': 'REVIEW_CREATED'}, status=201)
 
-        #except TypeError:
-        #    return JsonResponse({"MESSAGE":"TYPE_ERROR"}, status=400)
+        except TypeError:
+            return JsonResponse({"MESSAGE":"TYPE_ERROR"}, status=400)
         except Product.DoesNotExist:
             return JsonResponse({"MESSAGE":"PRODUCT_DOES_NOT_EXIST"}, status=404)
         except ValueError:
