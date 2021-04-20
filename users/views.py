@@ -3,6 +3,7 @@ import datetime
 
 from django.views import View
 from django.http  import JsonResponse
+from django.db.models import Q
 
 from .models import Review,User,ReviewImage,Product
 
@@ -35,41 +36,60 @@ class ReviewView(View):
                     'user_review_image' : user_review_image_list,
                     'gender'            : review.user.gender
                 })
-        
             return JsonResponse({'REVIEW' : review_list},status=200)
+
         except KeyError:
             return JsonResponse({'MESSAGE': 'KEY_ERROR'},status = 400)
 
     # @user_check
     def post(self,request,product_id):
         try: 
-
             data       = json.loads(request.body)
             text       = data['text']
-            product    = product_id
+            product    = Product.objects.get(id=product_id) 
             #user       = request.user
             user = User.objects.get(id=28)
 
-            if Review.objects.filter(product=product_id,user=user.id).exists():
+            if Review.objects.filter(product=product,user=user).exists():
                 return JsonResponse({'MESSAGE': 'REVIEW_CAN_WRITE_ONCE'}, status = 400)
 
             Review.objects.create(
-                user=user,
-                product=Product.objects.get(id=product),
-                text=text)
+                user    = user,
+                product = product,
+                text    = text)
 
             return JsonResponse({'MESSAGE': 'REVIEW_CREATED'}, status=201)
+
         except TypeError:
             return JsonResponse({"MESSAGE":"TYPE_ERROR"}, status=400)
         except Product.DoesNotExist:
             return JsonResponse({"MESSAGE":"PRODUCT_DOES_NOT_EXIST"}, status=404)
-        #except ValueError:
-        #    return JsonResponse({"MESSAGE":"CHECK_YOUR_VALUE"}, status= 400)
-    
+        except ValueError:
+            return JsonResponse({"MESSAGE":"CHECK_YOUR_VALUE"}, status= 400)
 
-    # @user_check
-    # def delete(self,request,product_id):
-    #     user = request.user
+     # @user_check
+    def delete(self,request,product_id):
+        try:
+             # user    = request.user
+            product = Product.objects.get(id=product_id)
+            user    = User.objects.get(id=28)
+
+            if not Review.objects.filter(product=product,user=user):
+                return JsonResponse({"MESSAGE": "YOUR_REVIEW_DOES_NOT_EXIST"},status=400)
+        
+            Review.objects.filter(product=product,user=user).delete()
+
+            return JsonResponse({'MESSAGE': 'SUCCESS'}, status=200)
+
+        except TypeError:
+            return JsonResponse({"MESSAGE":"TYPE_ERROR"}, status=400)
+        except Product.DoesNotExist:
+            return JsonResponse({"MESSAGE":"PRODUCT_DOES_NOT_EXIST"}, status=404)
+        except ValueError:
+            return JsonResponse({"MESSAGE":"CHECK_YOUR_VALUE"}, status= 400)
+        
+        
+
         
 
             
