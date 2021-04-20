@@ -4,14 +4,16 @@ import datetime
 from django.views import View
 from django.http  import JsonResponse
 
-from .models import Review,User,ReviewImage
+from .models import Review,User,ReviewImage,Product
 
 class ReviewView(View):
     def get(self,request,product_id):
         try:
-            reviews = Review.objects.all()
+            reviews = Review.objects.filter(product=product_id)
+
             if not reviews.exists():
                 return JsonResponse({'MESSAGE': 'REVIEW_DOES_NOT_EXIST'},status = 404)
+
             review_list = []
             for review in reviews:
                 user_review_image_list=[]
@@ -38,26 +40,36 @@ class ReviewView(View):
         except KeyError:
             return JsonResponse({'MESSAGE': 'KEY_ERROR'},status = 400)
 
-    @user_check
-    def post(self,request):
-            try: 
+    # @user_check
+    def post(self,request,product_id):
+        try: 
+
             data       = json.loads(request.body)
-            content    = data.get('content')
-            product_id = data.get('product_id')
-            product    = Product.objects.get(pk=product_info)
+            text       = data['text']
+            product    = product_id
+            #user       = request.user
+            user = User.objects.get(id=28)
 
-            Review.objects.create(user=request.user, product=product_id,content=content)
+            if Review.objects.filter(product=product_id,user=user.id).exists():
+                return JsonResponse({'MESSAGE': 'REVIEW_CAN_WRITE_ONCE'}, status = 400)
 
-            return JsonResponse({'result': 'Review Created'}, status=201)
+            Review.objects.create(
+                user=user,
+                product=Product.objects.get(id=product),
+                text=text)
+
+            return JsonResponse({'MESSAGE': 'REVIEW_CREATED'}, status=201)
         except TypeError:
-            return JsonResponse({"message":"Type_Error"}, status=400)
+            return JsonResponse({"MESSAGE":"TYPE_ERROR"}, status=400)
         except Product.DoesNotExist:
-            return JsonResponse({"message":"Product_DoesNotExist"}, status=404)
+            return JsonResponse({"MESSAGE":"PRODUCT_DOES_NOT_EXIST"}, status=404)
+        #except ValueError:
+        #    return JsonResponse({"MESSAGE":"CHECK_YOUR_VALUE"}, status= 400)
     
 
-    @user_check
-    def delete(self,request,product_id):
-        user = request.user
+    # @user_check
+    # def delete(self,request,product_id):
+    #     user = request.user
         
 
             
