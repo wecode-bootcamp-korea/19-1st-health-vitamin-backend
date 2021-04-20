@@ -121,14 +121,15 @@ class ReviewView(View):
         except KeyError:
             return JsonResponse({'MESSAGE': 'KEY_ERROR'},status = 400)
 
-    @user_check
+    #@user_check
     def post(self,request,product_id):
         try: 
             data       = json.loads(request.body)
             text       = data['text']
             product    = Product.objects.get(id=product_id) 
-            user       = request.user
-            images       = data.get('image',None)
+            #user       = request.user
+            user = User.objects.get(id=28)
+            image       = data.get('image',None)
 
             if Review.objects.filter(product=product,user=user).exists():
                 return JsonResponse({'MESSAGE': 'REVIEW_CAN_WRITE_ONCE'}, status = 400)
@@ -142,9 +143,7 @@ class ReviewView(View):
             review = Review.objects.get(user=user, product=product)
             print(review)
 
-            for image in images.values():
-                print(image)
-                ReviewImage.objects.create(
+            ReviewImage.objects.create(
                     image_url = image,
                     review    = Review.objects.get(id=review)
                 )
@@ -158,12 +157,13 @@ class ReviewView(View):
         except ValueError:
             return JsonResponse({"MESSAGE":"CHECK_YOUR_VALUE"}, status= 400)
 
-    @user_check
+    #@user_check
     def delete(self,request,product_id):
         try:
             user    = request.user
             product = Product.objects.get(id=product_id)
-            user    = User.objects.get(id=28)
+            #user    = User.objects.get(id=28)
+            user = User.objects.get(id=29)
 
             if not Review.objects.filter(product=product,user=user).exists():
                 return JsonResponse({"MESSAGE": "YOUR_REVIEW_DOES_NOT_EXIST"},status=400)
