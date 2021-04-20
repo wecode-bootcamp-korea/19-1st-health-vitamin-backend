@@ -61,8 +61,10 @@ class ReviewView(View):
                 )
             
             review = Review.objects.get(user=user, product=product)
+            print(review)
 
-            for image in images:
+            for image in images.values():
+                print(image)
                 ReviewImage.objects.create(
                     image_url = image,
                     review    = Review.objects.get(id=review)
