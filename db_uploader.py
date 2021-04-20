@@ -132,19 +132,19 @@ from orders.models import *
 #           gender=gender
 #         )
 
-# CSV_PATH_PRODUCTS = './reviews.csv'
-# with open(CSV_PATH_PRODUCTS) as in_file:
-#   data_reader = csv.reader(in_file)
-#   next(data_reader, None)
-#   for row in data_reader:
-#         text=row[0]
-#         product=Product.objects.get(id=row[1])
-#         user=User.objects.get(id=row[2])
-#         Review.objects.create(
-#           text=text,
-#           product=product,
-#           user=user
-#         )
+CSV_PATH_PRODUCTS = './reviews.csv'
+with open(CSV_PATH_PRODUCTS) as in_file:
+  data_reader = csv.reader(in_file)
+  next(data_reader, None)
+  for row in data_reader:
+        text=row[0]
+        product=Product.objects.get(id=row[1])
+        user=User.objects.get(id=row[2])
+        Review.objects.create(
+          text=text,
+          product=product,
+          user=user
+        )
 
 
 
