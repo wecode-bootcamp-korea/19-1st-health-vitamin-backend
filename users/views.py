@@ -87,10 +87,14 @@ class SignInView(View):
         except KeyError:
             return JsonResponse({'MESSAGE' : 'KEY_ERROR'}, status = 400)
 
-class ReviewView(View):
+class UserReviewView(View):
     def get(self,request,product_id):
         try:
+            ALL_REVIEWS = 0
             reviews = Review.objects.filter(product=product_id)
+
+            if product_id == ALL_REVIEWS:
+                reviews = Review.objects.all()
 
             if not reviews.exists():
                 return JsonResponse({'MESSAGE': 'REVIEW_DOES_NOT_EXIST'},status = 404)
@@ -140,16 +144,13 @@ class ReviewView(View):
                 text    = text
                 )
             
-            review = Review.objects.get(user=user, product=product)
+            # review = Review.objects.get(user=user, product=product)
 
-            for image in images:
-                ReviewImage.objects.create(
-                    image_url = image,
-                    review    = review.id
-                )
-
-
-            
+            # for image in images:
+            #     ReviewImage.objects.create(
+            #         image_url = image,
+            #         review    = review.id
+            #     )
 
             return JsonResponse({'MESSAGE': 'REVIEW_CREATED'}, status=201)
 
@@ -159,6 +160,8 @@ class ReviewView(View):
             return JsonResponse({"MESSAGE":"PRODUCT_DOES_NOT_EXIST"}, status=404)
         except ValueError:
             return JsonResponse({"MESSAGE":"CHECK_YOUR_VALUE"}, status= 400)
+        except KeyError:
+            return JsonResponse({'MESSAGE': 'KEY_ERROR'},status = 400)
 
     #@user_check
     def delete(self,request,product_id):
