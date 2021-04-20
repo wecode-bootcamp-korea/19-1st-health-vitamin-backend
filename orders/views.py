@@ -82,12 +82,13 @@ class CartView(View):
 
     @user_check
     def delete(self, request):
-        data     = json.loads(request.body)
-        user     = request.user
-        products = data['products']
+        IN_CART_STATUS_ID = 1
+        data              = json.loads(request.body)
+        user              = request.user
+        products          = data['products']
 
         try:
-            order = Order.objects.get(user_id=user.id, status_id=1)
+            order = Order.objects.get(user_id=user.id, status_id=IN_CART_STATUS_ID)
             for product in products:
                 order.cart_set.get(product_id=product['id']).delete()
 
