@@ -142,7 +142,7 @@ class BestProductView(View):
 
 class HashTagView(View):
     def get(self,request):
-        growth_products = SubCategoryProduct.objects.filter(sub_category=1,product__is_best=1)
+        growth_products = SubCategoryProduct.objects.filter(sub_category=5,product__is_best=1)
         growth_product_list=[{
                     'name'       : growth_product.product.name,
                     'price'      : growth_product.product.price,
