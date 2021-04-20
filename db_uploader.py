@@ -108,4 +108,46 @@ from orders.models import *
 #           product=product
 #         )
 
+# CSV_PATH_PRODUCTS = './users.csv'
+# with open(CSV_PATH_PRODUCTS) as in_file:
+#   data_reader = csv.reader(in_file)
+#   next(data_reader, None)
+#   for row in data_reader:
+#         account= row[0]
+#         password= row[1]
+#         name= row[2]
+#         email= row[3]
+#         phone_number= row[4]
+#         date_of_birth= row[5]
+#         division= row[6]
+#         gender= row[7]
+#         User.objects.create(
+#           account=account,
+#           password=password,
+#           name=name,
+#           email=email,
+#           phone_number=phone_number,
+#           date_of_birth=date_of_birth,
+#           division=division,
+#           gender=gender
+#         )
+
+CSV_PATH_PRODUCTS = './reviews.csv'
+with open(CSV_PATH_PRODUCTS) as in_file:
+  data_reader = csv.reader(in_file)
+  next(data_reader, None)
+  for row in data_reader:
+        text=row[0]
+        product=Product.objects.get(id=row[1])
+        user=User.objects.get(id=row[2])
+        Review.objects.create(
+          text=text,
+          product=product,
+          user=user
+        )
+
+
+
+        
+
 
