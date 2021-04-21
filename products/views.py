@@ -75,6 +75,8 @@ class ProductlistView(View):
         try:
             ALL_PRODUCTS = 0
             products = Product.objects.filter(sub_category__id=sub_category_id)
+            limit        = int(request.GET.get('limit', 16))
+            offset       = int(request.GET.get('offset', 0))
             
             if sub_category_id == ALL_PRODUCTS:
                 products = Product.objects.all()
@@ -92,7 +94,7 @@ class ProductlistView(View):
                     'id'         : product.id
                     } for product in products if not product.is_option]
                     
-            return JsonResponse({'product': product_list},status = 200)
+            return JsonResponse({'product': product_list[offset:offset+limit]},status = 200)
         
         except KeyError:
             return JsonResponse({'MESSAGE':'KEY_ERROR'}, status = 400)
