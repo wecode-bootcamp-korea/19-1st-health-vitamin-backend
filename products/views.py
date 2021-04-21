@@ -114,10 +114,10 @@ class ProductReviewView(View):
                     'gender'            : review.user.gender
                     } for review in reviews]
 
+            return JsonResponse({'REAL_REVIEW' : real_review_list}, status = 200)
+
         except Review.DoesNotExist:
             return JsonResponse({'MESSAGE':'REVIEW_DOES_NOT_EXIST'}, status=404)
-
-        return JsonResponse({'REAL_REVIEW' : real_review_list}, status = 200)
 
 class BestProductView(View):
     def get(self,request):
@@ -130,10 +130,11 @@ class BestProductView(View):
                         'image'      : Image.objects.filter(product_id=product.id).first().image_url,
                         'product_id' : product.id
                         } for product in products if product.is_best==1][:8]
+
+            return JsonResponse({'BEST_PRODUCT' : best_product_list}, status = 200)
+
         except Product.DoesNotExist:
             return JsonResponse({'MESSAGE': 'PRODUCT_DOES_NOT_EXIST'},status =404)
-
-        return JsonResponse({'BEST_PRODUCT' : best_product_list}, status = 200)
 
 class HashTagView(View):
     def get(self,request):
@@ -173,13 +174,14 @@ class HashTagView(View):
                     'image'      : Image.objects.filter(product_id=eye_product.product.id).first().image_url,
                     'product_id' : eye_product.product.id
                     } for eye_product in eye_products][:3]
+
+            return JsonResponse({
+                'HASH_TAG_GROWTH_PRODUCT'   : growth_product_list,
+                'HASH_TAG_FOCUS_ON_PRODUCT' : focus_on_product_list,
+                'HASH_TAG_SKIN_PRODUCT'     : skin_product_list,
+                'HASH_TAG_EYE_PRODUCT'      : eye_product_list}
+                ,status=200
+                )
+                
         except Product.DoesNotExist:
             return JsonResponse({'MESSAGE': 'PRODUCT_DOES_NOT_EXIST'},status =404)
-
-        return JsonResponse({
-            'HASH_TAG_GROWTH_PRODUCT'   : growth_product_list,
-            'HASH_TAG_FOCUS_ON_PRODUCT' : focus_on_product_list,
-            'HASH_TAG_SKIN_PRODUCT'     : skin_product_list,
-            'HASH_TAG_EYE_PRODUCT'      : eye_product_list}
-            ,status=200
-            )
