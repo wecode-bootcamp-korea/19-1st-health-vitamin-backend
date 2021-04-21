@@ -124,12 +124,11 @@ class UserReviewView(View):
             if Review.objects.filter(product=product,user=user).exists():
                 return JsonResponse({'MESSAGE': 'REVIEW_CAN_WRITE_ONCE'}, status = 400)
 
-            Review.objects.create(
-                user    = user,
-                product = product,
-                text    = text
-                )      
-            review = Review.objects.get(user=user, product=product)
+            review = Review.objects.create(
+                            user    = user,
+                            product = product,
+                            text    = text
+                        )      
             ReviewImage.objects.create(
                     image_url = image,
                     review    = review
