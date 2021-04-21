@@ -57,21 +57,14 @@ class CategoryView(View):
     def get(self,request):
         try:
             categories = MainCategory.objects.all()
-            category_list = []
-            for category in categories:
-                subcategorylist=[]
-                subcategories = category.subcategory_set.all()
-                for subcategory in subcategories:
-                    subcategoryinfo = {
-                        'category_id'   : subcategory.id,
-                        'category_name' : subcategory.name
-                    }
-                    subcategorylist.append(subcategoryinfo)
-                category_list.append({
-                    'main_category_id'   : category.id,
-                    'main_category_name' : category.name,
-                    'main_category_list' : subcategorylist
-                    })
+            category_list = [{
+                'main_category_id'   : category.id,
+                'main_category_name' : category.name,
+                'main_category_list' : [{'category_id'  : subcategory.id,
+                                         'category_name' : subcategory.name
+                                        } for subcategory in category.subcategory_set.all()]
+                }for category in categories]
+
             return JsonResponse({'category': category_list}, status = 200)
 
         except KeyError:
@@ -120,6 +113,7 @@ class ProductReviewView(View):
                     'user_review_image' : review.reviewimage_set.get(review=review).image_url if review.reviewimage_set.filter(review=review) else None,
                     'gender'            : review.user.gender
                     } for review in reviews]
+
         except Review.DoesNotExist:
             return JsonResponse({'MESSAGE':'REVIEW_DOES_NOT_EXIST'}, status=404)
 
