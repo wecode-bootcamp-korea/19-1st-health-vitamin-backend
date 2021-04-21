@@ -101,7 +101,7 @@ class ProductReviewView(View):
     def get(self,request):
         try:
             reviews = Review.objects.all().order_by('uploaded_at')[:10]
-            real_review_list=[{
+            main_page_review_list=[{
                     'review_id'         : review.id,
                     'product_name'      : review.product.name,
                     'product_image'     : review.product.image_set.all().first().image_url,
@@ -114,7 +114,7 @@ class ProductReviewView(View):
                     'gender'            : review.user.gender
                     } for review in reviews]
 
-            return JsonResponse({'REAL_REVIEW' : real_review_list}, status = 200)
+            return JsonResponse({'MAIN_PAGE_REVIEW' : main_page_review_list}, status = 200)
 
         except Review.DoesNotExist:
             return JsonResponse({'MESSAGE':'REVIEW_DOES_NOT_EXIST'}, status=404)
@@ -176,12 +176,15 @@ class HashTagView(View):
                     } for eye_product in eye_products][:3]
 
             return JsonResponse({
-                'HASH_TAG_GROWTH_PRODUCT'   : growth_product_list,
-                'HASH_TAG_FOCUS_ON_PRODUCT' : focus_on_product_list,
-                'HASH_TAG_SKIN_PRODUCT'     : skin_product_list,
-                'HASH_TAG_EYE_PRODUCT'      : eye_product_list}
-                ,status=200
-                )
+                'HASH_TAG_GROWTH_PRODUCT'   : {'name' : '# 우리 아이 성장에 쑥쑥! 도움이 되는!',
+                                               'product_list': growth_product_list},
+                'HASH_TAG_FOCUS_ON_PRODUCT' : {'name' : '# 수험생인 우리 아이, 집중력을 높이고 싶을 땐?',
+                                               'product_list': focus_on_product_list},
+                'HASH_TAG_SKIN_PRODUCT'     : {'name' : '# 탄력 있는 피부를 원해요! ',
+                                               'product_list':skin_product_list},
+                'HASH_TAG_EYE_PRODUCT'      : {'name' : '# 눈이 침침해졌다고 느낄 땐?',
+                                               'product_list':eye_product_list}},
+                                               status=200)
                 
         except Product.DoesNotExist:
             return JsonResponse({'MESSAGE': 'PRODUCT_DOES_NOT_EXIST'},status =404)
