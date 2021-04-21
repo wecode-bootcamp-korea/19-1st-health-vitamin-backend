@@ -4,7 +4,7 @@ import datetime
 from django.views import View
 from django.http  import JsonResponse
 
-from .models import Product, ShippingFee, ShippingFee, Image, Option, Discount, SubCategoryProduct
+from .models      import Product, ShippingFee, Image, Option, Discount, SubCategoryProduct
 from users.models import Review,ReviewImage
 
 class ProductDetailView(View):
@@ -111,72 +111,81 @@ class ProductlistView(View):
 
 class ProductReviewView(View):
     def get(self,request):
-        reviews = Review.objects.all().order_by('uploaded_at')[:10]
-        real_review_list=[{
-                'review_id'         : review.id,
-                'product_name'      : review.product.name,
-                'product_image'     : review.product.image_set.all().first().image_url,
-                'user_account'      : review.user.account,
-                'user_age'          : datetime.datetime.today().year - int(str(review.user.date_of_birth)[:4]) +1,
-                'user_review'       : review.text,
-                'uploaded_at'       : review.uploaded_at,
-                'updated_at'        : review.updated_at,
-                'user_review_image' : review.reviewimage_set.filter(review_id=review.id).first().image_url if ReviewImage.objects.filter(review_id=review.id) else '',
-                'gender'            : review.user.gender
-                } for review in reviews]
+        try:
+            reviews = Review.objects.all().order_by('uploaded_at')[:10]
+            real_review_list=[{
+                    'review_id'         : review.id,
+                    'product_name'      : review.product.name,
+                    'product_image'     : review.product.image_set.all().first().image_url,
+                    'user_account'      : review.user.account,
+                    'user_age'          : datetime.datetime.today().year - int(str(review.user.date_of_birth)[:4]) +1,
+                    'user_review'       : review.text,
+                    'uploaded_at'       : review.uploaded_at,
+                    'updated_at'        : review.updated_at,
+                    'user_review_image' : review.reviewimage_set.get(review=review).image_url if review.reviewimage_set.filter(review=review) else None,
+                    'gender'            : review.user.gender
+                    } for review in reviews]
+        except Review.DoesNotExist:
+            return JsonResponse({'MESSAGE':'REVIEW_DOES_NOT_EXIST'}, status=404)
 
         return JsonResponse({'REAL_REVIEW' : real_review_list}, status = 200)
 
 class BestProductView(View):
     def get(self,request):
-        products = Product.objects.all().order_by('stock')
-        best_product_list=[{
-                    'name'       : product.name,
-                    'price'      : product.price,
-                    'discount'   : Discount.objects.get(id=product.discount_id).rate,
-                    'image'      : Image.objects.filter(product_id=product.id).first().image_url,
-                    'product_id' : product.id
-                    } for product in products if product.is_best==1][:8]
+        try:
+            products = Product.objects.all().order_by('stock')
+            best_product_list=[{
+                        'name'       : product.name,
+                        'price'      : product.price,
+                        'discount'   : Discount.objects.get(id=product.discount_id).rate,
+                        'image'      : Image.objects.filter(product_id=product.id).first().image_url,
+                        'product_id' : product.id
+                        } for product in products if product.is_best==1][:8]
+        except Product.DoesNotExist:
+            return JsonResponse({'MESSAGE': 'PRODUCT_DOES_NOT_EXIST'},status =404)
 
         return JsonResponse({'BEST_PRODUCT' : best_product_list}, status = 200)
 
 class HashTagView(View):
     def get(self,request):
-        growth_products = SubCategoryProduct.objects.filter(sub_category=5,product__is_best=1)
-        growth_product_list=[{
-                    'name'       : growth_product.product.name,
-                    'price'      : growth_product.product.price,
-                    'discount'   : Discount.objects.get(id=growth_product.product.discount_id).rate,
-                    'image'      : Image.objects.filter(product_id=growth_product.product.id).first().image_url,
-                    'product_id' : growth_product.product.id 
-                    } for growth_product in growth_products][:3]
+        try:
+            growth_products = SubCategoryProduct.objects.filter(sub_category=5,product__is_best=1)
+            growth_product_list=[{
+                        'name'       : growth_product.product.name,
+                        'price'      : growth_product.product.price,
+                        'discount'   : Discount.objects.get(id=growth_product.product.discount_id).rate,
+                        'image'      : Image.objects.filter(product_id=growth_product.product.id).first().image_url,
+                        'product_id' : growth_product.product.id 
+                        } for growth_product in growth_products][:3]
 
-        focus_on_products = SubCategoryProduct.objects.filter(sub_category=6,product__is_best=1)
-        focus_on_product_list=[{
-                'name'       : focus_on_product.product.name,
-                'price'      : focus_on_product.product.price,
-                'discount'   : Discount.objects.get(id=focus_on_product.product.discount_id).rate,
-                'image'      : Image.objects.filter(product_id=focus_on_product.product.id).first().image_url,
-                'product_id' : focus_on_product.product.id
-                } for focus_on_product in focus_on_products][:3]
+            focus_on_products = SubCategoryProduct.objects.filter(sub_category=6,product__is_best=1)
+            focus_on_product_list=[{
+                    'name'       : focus_on_product.product.name,
+                    'price'      : focus_on_product.product.price,
+                    'discount'   : Discount.objects.get(id=focus_on_product.product.discount_id).rate,
+                    'image'      : Image.objects.filter(product_id=focus_on_product.product.id).first().image_url,
+                    'product_id' : focus_on_product.product.id
+                    } for focus_on_product in focus_on_products][:3]
         
-        skin_products = SubCategoryProduct.objects.filter(sub_category=1,product__is_best=1)
-        skin_product_list=[{
-                'name'       : skin_product.product.name,
-                'price'      : skin_product.product.price,
-                'discount'   : Discount.objects.get(id=skin_product.product.discount_id).rate,
-                'image'      : Image.objects.filter(product_id=skin_product.product.id).first().image_url,
-                'product_id' : skin_product.product.id
-                } for skin_product in skin_products][:3]
+            skin_products = SubCategoryProduct.objects.filter(sub_category=1,product__is_best=1)
+            skin_product_list=[{
+                    'name'       : skin_product.product.name,
+                    'price'      : skin_product.product.price,
+                    'discount'   : Discount.objects.get(id=skin_product.product.discount_id).rate,
+                    'image'      : Image.objects.filter(product_id=skin_product.product.id).first().image_url,
+                    'product_id' : skin_product.product.id
+                    } for skin_product in skin_products][:3]
         
-        eye_products = SubCategoryProduct.objects.filter(sub_category=3,product__is_best=1)
-        eye_product_list=[{
-                'name'       : eye_product.product.name,
-                'price'      : eye_product.product.price,
-                'discount'   : Discount.objects.get(id=eye_product.product.discount_id).rate,
-                'image'      : Image.objects.filter(product_id=eye_product.product.id).first().image_url,
-                'product_id' : eye_product.product.id
-                } for eye_product in eye_products][:3]
+            eye_products = SubCategoryProduct.objects.filter(sub_category=3,product__is_best=1)
+            eye_product_list=[{
+                    'name'       : eye_product.product.name,
+                    'price'      : eye_product.product.price,
+                    'discount'   : Discount.objects.get(id=eye_product.product.discount_id).rate,
+                    'image'      : Image.objects.filter(product_id=eye_product.product.id).first().image_url,
+                    'product_id' : eye_product.product.id
+                    } for eye_product in eye_products][:3]
+        except Product.DoesNotExist:
+            return JsonResponse({'MESSAGE': 'PRODUCT_DOES_NOT_EXIST'},status =404)
 
         return JsonResponse({
             'HASH_TAG_GROWTH_PRODUCT'   : growth_product_list,
