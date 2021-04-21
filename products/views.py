@@ -4,7 +4,7 @@ import datetime
 from django.views import View
 from django.http  import JsonResponse
 
-from .models      import Product, ShippingFee, Image, Option, Discount, SubCategoryProduct
+from .models      import Product, ShippingFee, Image, Option, Discount, SubCategoryProduct,MainCategory
 from users.models import Review,ReviewImage
 
 class ProductDetailView(View):
@@ -19,22 +19,14 @@ class ProductDetailView(View):
                 return JsonResponse({'MESSAGE' : 'NOT_FOUND'}, status=400)
             
             images        = product.image_set.all()
-            detail_images = [
-                    {
-                        'image_id'  : image.id,
-                        'image_url' : image.image_url 
-                        }
-                    for image in images]
+            detail_images = [image.image_url for image in images[1:]]
 
             options      = Option.objects.filter(product=product_id)
             option_items = [
                 {
-                    'id'        : option.option.id,
-                    'name'      : option.option.name,
-                    'price'     : option.option.price,
-                    'stock'     : option.option.stock,
-                    'image_id'  : option.option.image_set.first().id,
-                    'image_url' : option.option.image_set.first().image_url
+                    'name'  : option.option.name,
+                    'price' : option.option.price,
+                    'image' : option.option.image_set.first().image_url
                     }
                 for option in options
                 ]
@@ -44,11 +36,11 @@ class ProductDetailView(View):
                     'id'            : product.id,
                     'name'          : product.name,
                     'price'         : product.price,
-                    'stock'         : product.stock,
                     'detail'        : product.detail,
                     'shipping_fee'  : product.shipping_fee.price,
                     'minimum_free'  : product.shipping_fee.minimum_free,
                     'discount'      : product.discount.rate,
+                    'main_image'    : images.first().image_url,
                     'detail_images' : detail_images,
                     'option_items'  : option_items,
                         }
@@ -88,23 +80,26 @@ class CategoryView(View):
 class ProductlistView(View):
     def get(self,request,sub_category_id):
         try:
+            ALL_PRODUCTS = 0
             products = Product.objects.filter(sub_category__id=sub_category_id)
+            
+            if sub_category_id == ALL_PRODUCTS:
+                products = Product.objects.all()
 
-            if not products:
-                return JsonResponse({"message":"PRODUCT_DOES_NOT_EXIST"}, status=404)
+            if not products.exists():
+                return JsonResponse({"MESSAGE":"PRODUCT_DOES_NOT_EXIST"}, status=404)
 
-            product_list = []
-            for product in products:
-                if not product.is_option:
-                    product_list.append({
-                        'name'       : product.name,
-                        'price'      : product.price,
-                        'expired_at' : product.expired_at,
-                        'is_best'    : product.is_best,
-                        'discount'   : Discount.objects.get(id=product.discount_id).rate,
-                        'image'      : Image.objects.filter(product_id=product.id).first().image_url
-                        })
-            return JsonResponse({'product': product_list, 'total':len(product_list)},status = 200)
+            product_list = [{
+                    'name'       : product.name,
+                    'price'      : product.price,
+                    'expired_at' : product.expired_at,
+                    'is_best'    : product.is_best,
+                    'discount'   : Discount.objects.get(id=product.discount_id).rate,
+                    'image'      : Image.objects.filter(product_id=product.id).first().image_url,
+                    'id'         : product.id
+                    } for product in products if not product.is_option]
+                    
+            return JsonResponse({'product': product_list},status = 200)
         
         except KeyError:
             return JsonResponse({'MESSAGE':'KEY_ERROR'}, status = 400)
@@ -194,6 +189,3 @@ class HashTagView(View):
             'HASH_TAG_EYE_PRODUCT'      : eye_product_list}
             ,status=200
             )
-
-
-
