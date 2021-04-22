@@ -1,10 +1,16 @@
 import json, bcrypt, jwt, re, datetime
+from products.models import ShippingFee
 
 from django.http      import JsonResponse
 from django.views     import View
 from django.db.models import Q
 
+<<<<<<< HEAD
 from .models          import Review,User,ReviewImage,Product,Like
+=======
+from .models          import Review,User,ReviewImage,Product, Like
+from products.models  import ShippingFee
+>>>>>>> main
 from utils.decorator  import user_check
 import my_settings
 
@@ -164,7 +170,6 @@ class UserReviewView(View):
             return JsonResponse({"MESSAGE":"PRODUCT_DOES_NOT_EXIST"}, status=404)
         except ValueError:
             return JsonResponse({"MESSAGE":"CHECK_YOUR_VALUE"}, status= 400)
-
 
 class WishlistView(View):
     @user_check
