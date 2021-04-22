@@ -11,6 +11,7 @@ def user_check(func):
     def wrapper(self,request,*args, **kwargs):
     
         try:
+            print(2)
             access_token = request.headers.get('Authorization', None)          
             payload = jwt.decode(access_token, my_settings.SECRET_KEY, algorithms=my_settings.ALGORITHM)
             user = User.objects.get(id=payload['user_id'])                 
