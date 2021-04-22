@@ -15,8 +15,11 @@ Including another URLconf
 """
 from django.urls import path,include
 
+from orders.views import CartView
+
 urlpatterns = [
     path('products',include('products.urls')),
-    path('carts', include('orders.urls')),
-    path('users',include('users.urls'))
+    path('carts', CartView.as_view()),
+    path('users',include('users.urls')),
+    path('orders', include('orders.urls'))
 ]
