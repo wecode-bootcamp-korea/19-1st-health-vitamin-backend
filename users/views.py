@@ -164,3 +164,29 @@ class UserReviewView(View):
             return JsonResponse({"MESSAGE":"PRODUCT_DOES_NOT_EXIST"}, status=404)
         except ValueError:
             return JsonResponse({"MESSAGE":"CHECK_YOUR_VALUE"}, status= 400)
+
+
+class WishlistView(View):
+    @user_check
+    def post(self, request):
+        data     = json.loads(request.body)
+        user     = request.user
+        products = data['products']
+        return JsonResponse({'MESSAGE' : 'SUCCESS'}, status=200)
+
+            try:
+                for product in products:
+                    if Like.objects.filter(user_id = user.id, product_id = product['product_id']).exists():
+                        like = Like.objects.get(user_id = user.id, product_id = product['product_id'])
+                    else:
+                        like = Like(user_id = user.id, product_id = product['product_id'])
+                        like.save()
+
+                return JsonResponse({'MESSAGE' : 'SUCCESS'}, status = 201)
+
+            except KeyError:
+                return JsonResponse({'MESSAGE' : 'KEY_ERROR'}, status = 400)
+            except ValueError:
+                return JsonResponse({'MESSAGE' : 'VALUE_ERROR'}, status = 400)
+
+
