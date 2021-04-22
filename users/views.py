@@ -5,12 +5,8 @@ from django.http      import JsonResponse
 from django.views     import View
 from django.db.models import Q
 
-<<<<<<< HEAD
-from .models          import Review,User,ReviewImage,Product,Like
-=======
 from .models          import Review,User,ReviewImage,Product, Like
 from products.models  import ShippingFee
->>>>>>> main
 from utils.decorator  import user_check
 import my_settings
 
@@ -171,7 +167,8 @@ class UserReviewView(View):
         except ValueError:
             return JsonResponse({"MESSAGE":"CHECK_YOUR_VALUE"}, status= 400)
 
-class WishlistView(View):
+
+class WishListView(View):
     @user_check
     def post(self, request):
         print(1)
@@ -195,4 +192,50 @@ class WishlistView(View):
             return JsonResponse({'MESSAGE' : 'KEY_ERROR'}, status = 400)
         except ValueError:
             return JsonResponse({'MESSAGE' : 'VALUE_ERROR'}, status = 400)
+
+    @user_check
+    def get(self, request):
+        user    = User.objects.get(id = request.user.id)
+        try:
+            if not Like.objects.filter(user_id=user_id).exists():
+                return JsonResponse({"MESSAGE" : "NO_PRODUCTS_IN_WISH_LIST"}, status=400)
+            likes = user.like_set.all()
+            products = [
+                {
+                    'id'       : like.product_id,
+                    'name'     : lie.product.name,
+                    'price'    : like.product.price,
+                    'image'    : like.product.image_set.first().image_url,
+                    'discount' : like.product.discount.rate
+                    }
+                for like in likes
+                ]
+            shipping_fee = ShippingFee.objects.get(id=1)
+            shipping_fees = {
+                "shipping_fee" : shipping_fee.price,
+                "minimum_free" : shipping_fee.minimum_free
+                }
+            return JsonResponse({
+                "MESSAGE" : "SUCCESS",
+                "PRODUCT_LIST" : products,
+                "SHIPPING_FEE" : shipping_fees},
+                status=200)
+        except KeyError:
+            return JsonResponse({"MESSAGE" : "KEY_ERROR"}, status=400)
+        except ValueError:
+            return JsonResponse({"MESSAGE", "VALUE_ERROR"}, status=400)
+
+    @user_check
+    def delete(self, request):
+        data     = json.loads(request.body)
+        user_id  = request.user.id
+        products = data['products']
+        try:
+            for product in products:
+                Like.objects.get(user_id=user_id, product_id=product['id']).delete()
+            return JsonResponse({"MESSAGE" : "SUCCESS"} , status=200)
+        except KeyError:
+            return JsonResponse({"MESSAGE" : "KEY_ERROR"}, status=400)
+        except ValueError:
+            return JsonResponse({"MESSAGE", "VALUE_ERROR"}, status=400)
 
