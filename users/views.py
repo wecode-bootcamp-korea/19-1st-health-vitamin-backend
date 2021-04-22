@@ -170,8 +170,7 @@ class UserReviewView(View):
 class WishListView(View):
     @user_check
     def get(self, request):
-        user_id = request.user.id
-        user    = User.objects.get(id = user_id)
+        user    = User.objects.get(id = request.user.id)
 
         try:
             if not Like.objects.filter(user_id=user_id).exists():
@@ -188,16 +187,16 @@ class WishListView(View):
                     }
                 for like in likes
                 ]
-
-            shipping_fee = {
-                "shipping_fee" : ShippingFee.objects.get(id=1).price,
-                "minimum_free" : ShippingFee.objects.get(id=1).minimum_free
+            shipping_fee = ShippingFee.objects.get(id=1)
+            shipping_fees = {
+                "shipping_fee" : shipping_fee.price,
+                "minimum_free" : shipping_fee.minimum_free
                 }
 
             return JsonResponse({
                 "MESSAGE" : "SUCCESS",
                 "PRODUCT_LIST" : products,
-                "SHIPPING_FEE" : shipping_fee},
+                "SHIPPING_FEE" : shipping_fees},
                 status=200)
         
         except KeyError:
