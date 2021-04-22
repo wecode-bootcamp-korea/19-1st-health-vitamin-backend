@@ -104,19 +104,19 @@ class OrderView(View):
     @user_check
     def get(self, request):
         IN_CART_STATUS_ID = 1
-        user = request.user
+        user              = request.user
 
         try:
-            order = Order.objects.get(user_id=user.id, status_id=IN_CART_STATUS_ID)
-            carts = order.cart_set.all()
+            order        = Order.objects.get(user_id=user.id, status_id=IN_CART_STATUS_ID)
+            carts        = order.cart_set.all()
             product_list = [
                         {
-                          'id' : cart.product_id,
-                          'count' : cart.count,
-                          'name' : cart.product.name,
-                          'price' : cart.product.price,
+                          'id'       : cart.product_id,
+                          'count'    : cart.count,
+                          'name'     : cart.product.name,
+                          'price'    : cart.product.price,
                           'discount' : cart.product.discount.rate,
-                          'image' : cart.product.image_set.first().image_url
+                          'image'    : cart.product.image_set.first().image_url
                           }
                         for cart in carts]
 
@@ -129,7 +129,7 @@ class OrderView(View):
 
             return JsonResponse(
                 {
-                    'MESSAGE' : 'SUCCESS',
+                    'MESSAGE'      : 'SUCCESS',
                     'PRODUCT_LIST' : product_list,
                     'SHIPPING_FEE' : shipping_fee},
                     status=200)
@@ -142,8 +142,8 @@ class OrderView(View):
     def post(self, request):
         IN_CART_STATUS_ID = 1
         IS_PAID_STATUS_ID = 2
-        user = request.user
-        data = json.loads(request.body)
+        user              = request.user
+        data              = json.loads(request.body)
 
         try:
             if data['total'] >= 200000:
@@ -152,20 +152,20 @@ class OrderView(View):
             shipping_information = data['shipping_information']
 
             user_shipping_information = ShippingInformation(
-                    message = shipping_information['message'],
-                    name = shipping_information['name'],
-                    user_id = user.id,
-                    address = shipping_information['address'],
-                    phone_number = shipping_information['phone_number'],
-                    email = shipping_information['email']
+                    message           = shipping_information['message'],
+                    name              = shipping_information['name'],
+                    user_id           = user.id,
+                    address           = shipping_information['address'],
+                    phone_number      = shipping_information['phone_number'],
+                    email             = shipping_information['email']
                     )
             user_shipping_information.save()
 
             order = {
-                    'status_id' : IS_PAID_STATUS_ID,
-                    'paid_at' : datetime.datetime.now(),
+                    'status_id'               : IS_PAID_STATUS_ID,
+                    'paid_at'                 : datetime.datetime.now(),
                     'shipping_information_id' : user_shipping_information.id,
-                    'total' : data['total']
+                    'total'                   : data['total']
                     }
             Order.objects.filter(user_id=user.id, status_id=IN_CART_STATUS_ID).update(**order)
 
