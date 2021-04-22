@@ -222,23 +222,23 @@ class WishlistView(View):
             return JsonResponse({'MESSAGE' : 'KEY_ERROR'}, status=400)
 
     @user_check
-        def delete(self, request):
-            data     = json.loads(request.body)
-            user     = request.user
-            products = data['products']
+    def delete(self, request):
+        data     = json.loads(request.body)
+        user     = request.user
+        products = data['products']
 
-            try:
-                like = Like.objects.get(user_id = user.id)
+        try:
+            like = Like.objects.get(user_id = user.id)
 
-                for product in products:
-                    like.like_set.get(product_id = product['id']).delete()
+            for product in products:
+                like.like_set.get(product_id = product['id']).delete()
 
-                return JsonResponse({'MESSAGE' : 'SUCCESS'}, status = 200)
+            return JsonResponse({'MESSAGE' : 'SUCCESS'}, status = 200)
 
-            except KeyError:
-                return JsonResponse({'MESSAGE' : 'KEY_ERROR'}, status = 400)
-            except ValueError:
-                return JsonResponse({'MESSAGE' : 'VALUE_ERROR'}, status = 400)
+        except KeyError:
+            return JsonResponse({'MESSAGE' : 'KEY_ERROR'}, status = 400)
+        except ValueError:
+            return JsonResponse({'MESSAGE' : 'VALUE_ERROR'}, status = 400)
 
 
 
