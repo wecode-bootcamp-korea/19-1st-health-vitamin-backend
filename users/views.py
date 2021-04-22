@@ -172,7 +172,6 @@ class WishlistView(View):
         data     = json.loads(request.body)
         user     = request.user
         products = data['products']
-        return JsonResponse({'MESSAGE' : 'SUCCESS'}, status=200)
 
         try:
             for product in products:
