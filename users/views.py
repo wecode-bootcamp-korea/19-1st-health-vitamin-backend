@@ -4,7 +4,7 @@ from django.http      import JsonResponse
 from django.views     import View
 from django.db.models import Q
 
-from .models          import Review,User,ReviewImage,Product
+from .models          import Review,User,ReviewImage,Product,Like
 from utils.decorator  import user_check
 import my_settings
 
@@ -169,16 +169,19 @@ class UserReviewView(View):
 class WishlistView(View):
     @user_check
     def post(self, request):
+        print(1)
         data     = json.loads(request.body)
         user     = request.user
         products = data['products']
+        print(products)
 
         try:
             for product in products:
-                if Like.objects.filter(user_id = user.id, product_id = product['product_id']).exists():
-                    like = Like.objects.get(user_id = user.id, product_id = product['product_id'])
+                product_object = Product.objects.get(id=product)
+                if Like.objects.filter(user_id = user.id, product_id = product_object.id).exists():
+                    like = Like.objects.get(user_id = user.id, product_id = product_object.id)
                 else:
-                    like = Like(user_id = user.id, product_id = product['product_id'])
+                    like = Like(user_id = user.id, product_id = product_object.id)
                     like.save()
 
             return JsonResponse({'MESSAGE' : 'SUCCESS'}, status = 201)
@@ -191,10 +194,13 @@ class WishlistView(View):
     @user_check
     def get(self, request):
         user = request.user
+        like = Like.objects.all()
 
         try:
             if not Like.objects.filter(user_id = user.id).exists():
                 return JsonResponse({'MESSAGE' : 'NO_PRODUCTS_IN_WISHLIST'}, status = 400)
+            
+            #product = Product.objects.all()
 
             likes = like.like_set.all()
 
