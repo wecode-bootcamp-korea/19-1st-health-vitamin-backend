@@ -102,8 +102,8 @@ class CartView(View):
     @user_check
     def patch(self, request):
         IN_CART_STATUS_ID = 1
-        data = json.loads(request.body)
-        user = request.user
+        data              = json.loads(request.body)
+        user              = request.user
 
         try:
             order = Order.objects.get(user_id=user.id, status_id=IN_CART_STATUS_ID)
