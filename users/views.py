@@ -174,19 +174,51 @@ class WishlistView(View):
         products = data['products']
         return JsonResponse({'MESSAGE' : 'SUCCESS'}, status=200)
 
-            try:
-                for product in products:
-                    if Like.objects.filter(user_id = user.id, product_id = product['product_id']).exists():
-                        like = Like.objects.get(user_id = user.id, product_id = product['product_id'])
-                    else:
-                        like = Like(user_id = user.id, product_id = product['product_id'])
-                        like.save()
+        try:
+            for product in products:
+                if Like.objects.filter(user_id = user.id, product_id = product['product_id']).exists():
+                    like = Like.objects.get(user_id = user.id, product_id = product['product_id'])
+                else:
+                    like = Like(user_id = user.id, product_id = product['product_id'])
+                    like.save()
 
-                return JsonResponse({'MESSAGE' : 'SUCCESS'}, status = 201)
+            return JsonResponse({'MESSAGE' : 'SUCCESS'}, status = 201)
 
-            except KeyError:
-                return JsonResponse({'MESSAGE' : 'KEY_ERROR'}, status = 400)
-            except ValueError:
-                return JsonResponse({'MESSAGE' : 'VALUE_ERROR'}, status = 400)
+        except KeyError:
+            return JsonResponse({'MESSAGE' : 'KEY_ERROR'}, status = 400)
+        except ValueError:
+            return JsonResponse({'MESSAGE' : 'VALUE_ERROR'}, status = 400)
 
+    @user_check
+    def get(self, request):
+        user = request.user
 
+        try:
+            if not Like.objects.filter(user_id = user.id).exists():
+                return JsonResponse({'MESSAGE' : 'NO_PRODUCTS_IN_WISHLIST'}, status = 400)
+
+            likes = like.like_set.all()
+
+            product_list = [
+                {
+                    'id'       : like.product_id,
+                    'name'     : like.product.name,
+                    'price'    : like.product.price,
+                    'discount' : like.product.discount.rate,
+                    'image'    : like.product.image_set.first().image_url,
+                    }
+                for like in likes]
+
+            shipping_fee = [
+                {
+                    'shipping_fee' : ShippingFee.objects.get(id=1).price,
+                    'minimum_free' : ShippingFee.objects.get(id=1).minimum_free
+                    }
+                ]
+
+            return JsonResponse(
+                {
+                    'MESSAGE'      : 'SUCCESS',
+                    'PRODUCT_LIST' : product_list,
+                    'SHIPPING_FEE' : shipping_fee},
+                    status=200)
