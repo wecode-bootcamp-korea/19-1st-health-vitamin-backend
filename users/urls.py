@@ -5,5 +5,5 @@ urlpatterns = [
     path('/signup', SignUpView.as_view()),
     path('/signin', SignInView.as_view()),
     path('/reviews/<int:product_id>', UserReviewView.as_view()),
-    path('/wishlist/<int:user_id>', WishListView.as_view())
+    path('/wishlist', WishListView.as_view())
 ]
