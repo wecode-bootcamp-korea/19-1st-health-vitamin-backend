@@ -98,3 +98,20 @@ class CartView(View):
             return JsonResponse({'MESSAGE' : 'KEY_ERROR'}, status=400)
         except ValueError:
             return JsonResponse({'MESSAGE' : 'VALUE_ERROR'}, status=400)
+
+    @user_check
+    def patch(self, request):
+        IN_CART_STATUS_ID = 1
+        data              = json.loads(request.body)
+        user              = request.user
+
+        try:
+            order = Order.objects.get(user_id=user.id, status_id=IN_CART_STATUS_ID)
+            order.cart_set.filter(product_id=data['id']).update(count=data['count'])
+
+            return JsonResponse({'MESSAGE' : 'SUCCESS'}, status=201)
+
+        except KeyError:
+            return JsonResponse({'MESSAGE' : 'KEY_ERROR'}, status=400)
+        except ValueError:
+            return JsonResponse({'MESSAGE' : 'VALUE_ERROR'}, status=400)
