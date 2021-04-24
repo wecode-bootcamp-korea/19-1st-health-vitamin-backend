@@ -101,7 +101,7 @@ class ProductlistView(View):
                     'id'         : product.id
                     } for product in products if not product.is_option]
                     
-            return JsonResponse({'product': product_list[offset:offset+limit]},status = 200)
+            return JsonResponse({'product': product_list[offset:offset+limit], 'total' : len(product_list)} ,status = 200)
         
         except KeyError:
             return JsonResponse({'MESSAGE':'KEY_ERROR'}, status = 400)
@@ -146,49 +146,21 @@ class BestProductView(View):
             return JsonResponse({'MESSAGE': 'PRODUCT_DOES_NOT_EXIST'},status =404)
 
 class HashTagView(View):
-    def get(self,request):
+    def get(self,request,sub_category_id):    
         try:
-            growth_products = SubCategoryProduct.objects.filter(sub_category=5,product__is_best=1)
-            growth_product_list=[{
-                        'name'       : growth_product.product.name,
-                        'price'      : growth_product.product.price,
-                        'discount'   : Discount.objects.get(id=growth_product.product.discount_id).rate,
-                        'image'      : Image.objects.filter(product_id=growth_product.product.id).first().image_url,
-                        'product_id' : growth_product.product.id 
-                        } for growth_product in growth_products][:3]
-
-            focus_on_products = SubCategoryProduct.objects.filter(sub_category=6,product__is_best=1)
-            focus_on_product_list=[{
-                    'name'       : focus_on_product.product.name,
-                    'price'      : focus_on_product.product.price,
-                    'discount'   : Discount.objects.get(id=focus_on_product.product.discount_id).rate,
-                    'image'      : Image.objects.filter(product_id=focus_on_product.product.id).first().image_url,
-                    'product_id' : focus_on_product.product.id
-                    } for focus_on_product in focus_on_products][:3]
-        
-            skin_products = SubCategoryProduct.objects.filter(sub_category=1,product__is_best=1)
-            skin_product_list=[{
-                    'name'       : skin_product.product.name,
-                    'price'      : skin_product.product.price,
-                    'discount'   : Discount.objects.get(id=skin_product.product.discount_id).rate,
-                    'image'      : Image.objects.filter(product_id=skin_product.product.id).first().image_url,
-                    'product_id' : skin_product.product.id
-                    } for skin_product in skin_products][:3]
-        
-            eye_products = SubCategoryProduct.objects.filter(sub_category=3,product__is_best=1)
-            eye_product_list=[{
-                    'name'       : eye_product.product.name,
-                    'price'      : eye_product.product.price,
-                    'discount'   : Discount.objects.get(id=eye_product.product.discount_id).rate,
-                    'image'      : Image.objects.filter(product_id=eye_product.product.id).first().image_url,
-                    'product_id' : eye_product.product.id
-                    } for eye_product in eye_products][:3]
-
-            return JsonResponse({
-                'HASH_TAG_GROWTH_PRODUCT'   : growth_product_list,
-                'HASH_TAG_FOCUS_ON_PRODUCT' : focus_on_product_list,
-                'HASH_TAG_SKIN_PRODUCT'     : skin_product_list,
-                'HASH_TAG_EYE_PRODUCT'      : eye_product_list}, status=200)
+            if not (sub_category_id == 5 or sub_category_id == 6 or sub_category_id == 1 or sub_category_id == 3):
+                return JsonResponse({'MESSAGE':'CHECK_YOUR_CATEGORY_NUMBER'}, status=404)
                 
+            sub_products = SubCategoryProduct.objects.filter(id=sub_category_id,product__is_best=1)
+            product_list = [{
+                        'name'       : sub_product.product.name,
+                        'price'      : sub_product.product.price,
+                        'discount'   : Discount.objects.get(id=sub_product.product.discount_id).rate,
+                        'image'      : Image.objects.filter(product_id=sub_product.product.id).first().image_url,
+                        'product_id' : sub_product.product.id
+                        } for sub_product in sub_products][:3]
+
+            return JsonResponse({'PRODUCT_LIST':product_list}, status = 200)
+
         except Product.DoesNotExist:
             return JsonResponse({'MESSAGE': 'PRODUCT_DOES_NOT_EXIST'},status =404)
