@@ -1,4 +1,7 @@
-# Duft & Doft 클론 프로젝트 (AirDropTheBeat)
+# Duft & Doft 클론 프로젝트
+
+# Duft & Doft 사이트 소개
+Duft & Doft 는 향수,핸드크림,샴푸,바디워시 등을 판매하는 회사로써 
 
 # 🗓 프로젝트 기간
 2021.04.12 ~ 2021.04.23
