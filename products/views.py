@@ -81,7 +81,7 @@ class ProductlistView(View):
     def get(self,request,sub_category_id):
         try:
             ALL_PRODUCTS = 0
-            products = Product.objects.filter(sub_category__id=sub_category_id)
+            products     = Product.objects.filter(sub_category__id=sub_category_id)
             limit        = int(request.GET.get('limit', 16))
             offset       = int(request.GET.get('offset', 0))
             
@@ -96,8 +96,8 @@ class ProductlistView(View):
                     'price'      : product.price,
                     'expired_at' : product.expired_at,
                     'is_best'    : product.is_best,
-                    'discount'   : Discount.objects.get(id=product.discount_id).rate,
-                    'image'      : Image.objects.filter(product_id=product.id).first().image_url,
+                    'discount'   : product.discount.rate,
+                    'image'      : product.image_set.first().image_url,
                     'id'         : product.id
                     } for product in products if not product.is_option]
                     
@@ -135,8 +135,8 @@ class BestProductView(View):
             best_product_list=[{
                         'name'       : product.name,
                         'price'      : product.price,
-                        'discount'   : Discount.objects.get(id=product.discount_id).rate,
-                        'image'      : Image.objects.filter(product_id=product.id).first().image_url,
+                        'discount'   : product.discount.rate,
+                        'image'      : product.image_set.first().image_url,
                         'product_id' : product.id
                         } for product in products if product.is_best==1][:8]
 
@@ -148,7 +148,7 @@ class BestProductView(View):
 class HashTagView(View):
     def get(self,request,sub_category_id):    
         try:
-            if not (sub_category_id == 5 or sub_category_id == 6 or sub_category_id == 1 or sub_category_id == 3):
+            if not sub_category_id in [1, 3, 5, 6]:
                 return JsonResponse({'MESSAGE':'CHECK_YOUR_CATEGORY_NUMBER'}, status=404)
                 
             sub_products = SubCategoryProduct.objects.filter(id=sub_category_id,product__is_best=1)
