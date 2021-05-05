@@ -23,6 +23,7 @@ class ShippingFee(models.Model):
         db_table = 'shipping_fees'
 
 class Product(models.Model):
+    # 하이하이
     name         = models.CharField(max_length=45)
     price        = models.PositiveIntegerField()
     detail       = models.TextField()
